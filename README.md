@@ -1,13 +1,13 @@
-### API de CycleCare
+### CycleCare API
 
-¡Bienvenido al repositorio oficial de la API de CycleCare! Esta API proporciona una solución innovadora para el seguimiento del ciclo menstrual y la salud reproductiva de las personas que menstrúan.
+Welcome to the official repository of the CycleCare API! This API provides an innovative solution for tracking menstrual cycles and reproductive health for menstruating individuals.
 
-#### Descripción
-La API de CycleCare es una herramienta poderosa que permite a los desarrolladores integrar fácilmente las funcionalidades de seguimiento menstrual en aplicaciones existentes o desarrollar nuevas aplicaciones centradas en la salud femenina. Este repositorio contiene todo el código fuente, la documentación técnica y otros recursos necesarios para implementar la API de CycleCare en diversos entornos.
+#### Description
+The CycleCare API is a powerful tool that allows developers to easily integrate menstrual tracking functionalities into existing applications or develop new applications focused on women's health. This repository contains all the source code, technical documentation, and other resources necessary to implement the CycleCare API in various environments.
 
-#### Características principales
-- Endpoints para el registro y seguimiento del ciclo menstrual.
-- Funciones de predicción de períodos menstruales y días fértiles.
-- Capacidades de notificación y recordatorio personalizados.
-- Acceso a datos y análisis relacionados con la salud menstrual.
-- Interfaz intuitiva y documentación completa para una fácil integración.
+#### Key Features
+- Endpoints for menstrual cycle registration and tracking.
+- Prediction functions for menstrual periods and fertile days.
+- Custom notification and reminder capabilities.
+- Access to data and analysis related to menstrual health.
+- Intuitive interface and comprehensive documentation for easy integration.
