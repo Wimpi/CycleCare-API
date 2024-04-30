@@ -1,44 +1,21 @@
-const { response } = require("express");
-const { login, deleteUserByUsername, getUserInfoByUsername, updatePasswordByEmail } = require("../database/dao/user_dao");
+const { request, response } = require("express");
+const { generateJWT } = require('../helpers/create_JWT');
+const { login } = require("../database/dao/user_dao");
 
-const userLogin = async (req, res) => {
+const userLogin = async (req, res = response) => {
     const { username, password } = req.body;
-    const user = await login(username, password);
-    if (user) {
-        res.status(200).json(user);
-    } else {
-        res.status(401).json({ message: "Nombre de usuario o contraseña incorrectos" });
+    try {
+        const loginResult = await login(username, password);
+        const token = await generateJWT(username);
+        res.json({
+            username: loginResult.email,
+            rol: loginResult.role,
+            token
+          });
+    } catch (error) {
+        console.error(error);
+        res.status(404).json({ message: "Error logging in. Please check your username and password and try again", error });
     }
-};
+}
 
-const deleteUser = async (req, res) => {
-    const { username } = req.body;
-    const success = await deleteUserByUsername(username);
-    if (success) {
-        res.status(200).json({ message: "Usuario eliminado correctamente" });
-    } else {
-        res.status(500).json({ message: "Error al eliminar usuario" });
-    }
-};
-
-const getUserInfo = async (req, res) => {
-    const { username } = req.body;
-    const userInfo = await getUserInfoByUsername(username);
-    if (userInfo) {
-        res.status(200).json(userInfo);
-    } else {
-        res.status(500).json({ message: "Error al obtener información del usuario" });
-    }
-};
-
-const updatePassword = async (req, res) => {
-    const { email, newPassword } = req.body;
-    const result = await updatePasswordByEmail(email, newPassword);
-    if (result.success) {
-        res.status(200).json({ message: result.message });
-    } else {
-        res.status(500).json({ message: result.message });
-    }
-};
-
-module.exports = { userLogin, deleteUser, getUserInfo, updatePassword };
+module.exports = { userLogin};
