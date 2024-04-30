@@ -5,7 +5,7 @@ const cors = require ('cors');
 class Server{
     constructor(){
         this.app = express();
-        this.port = process.env.PORT;
+        this.port = process.env.APP_PORT;
         this.middleware();
         this.routes();
     }
@@ -17,7 +17,7 @@ class Server{
     }
 
     routes(){
-        this.app.use("/apicyclecare/users", require('../routes/users_routes'));
+        this.app.use("/apicyclecare/users", require('../routes/usersRoutes'));
     }
 
     listen() {
