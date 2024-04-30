@@ -9,14 +9,17 @@ class Server{
         this.middleware();
         this.routes();
     }
+
     middleware(){
         this.app.use(cors());
         this.app.use(express.json());
         this.app.use(express.static('public'));
     }
+
     routes(){
-        this.app.use("/api/users", require('../routes/users_routes'));
+        this.app.use("/apicyclecare/users", require('../routes/users_routes'));
     }
+
     listen() {
         this.app.listen(this.port, ()=>{
             console.log(`Server listening in port ${this.port}`);
