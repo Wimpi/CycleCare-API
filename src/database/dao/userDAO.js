@@ -1,8 +1,6 @@
 const connection = require("../connection");
 
 const login = async (username, password) => {
-    console.log("password: " + password);
-    console.log("user: " + username);
     const query = 'SELECT email, role FROM user WHERE username = ? AND password = ?';
     let loginResult = null;
     try {
@@ -16,7 +14,7 @@ const login = async (username, password) => {
             };
         }
     } catch (error) {
-        console.error("Error al iniciar sesión:", error);
+        console.error("Login error:", error);
         throw error;
     }
 

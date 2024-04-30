@@ -2,7 +2,7 @@ const {Router}  = require ('express');
 
 const {
     userLogin,
-} = require('../controllers/user_controller');
+} = require('../controllers/userController');
 
 const router = Router();
 router.post('/login', userLogin);
