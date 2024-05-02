@@ -11,14 +11,13 @@ The CycleCare API offers a comprehensive solution for tracking menstrual cycles 
 - **Custom Notification and Reminder Capabilities:** Allows customization of notifications and reminders.
 - **Data Access and Analysis:** Access to data and analysis related to menstrual health.
 - **Intuitive Interface:** User-friendly interface for easy integration.
-- **Comprehensive Documentation:** Includes detailed documentation for developers.
 
 ## Technologies Used
 
-- **Programming Language:** [Language Name]
-- **Framework:** [Framework Name]
-- **Database:** [Database Name]
-- **API Documentation:** [Documentation Tool]
+- **Programming Language:** [Javascript]
+- **Tecnologías:** [NodeJS]
+- **Database:** [MySQL]
+- **API Documentation:** [Swagger]
 
 ## Installation
 
@@ -30,4 +29,4 @@ git clone https://github.com/fairyofshampoo/CycleCare-API.git
 
 
 ## Additional Notes
-- Last updated: [26/03/2024]
+- Last updated: [30/04/2024]
