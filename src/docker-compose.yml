@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  cyclecare_db:
+    container_name: cyclecare_db_container
+    image: mysql:8.0
+    restart: always
+    ports:
+      - 3308:3306
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_USER: sangron1356
+      MYSQL_PASSWORD: CYCL3C4RE
+      MYSQL_DB: cycleCareDB
+      MYSQL_ROOT_PASSWORD: CYCL3C4RE
+  cyclecare_restapi:
+    build: 
+      context: .
+    container_name: cyclecare_restapi_container
+    restart: always
+    ports:
+      - 8085:8085
+    depends_on:
+      - cyclecare_db
+volumes:
+  init-scripts:
