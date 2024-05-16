@@ -64,7 +64,7 @@ CREATE TABLE contentRating (
 );
 
 CREATE TABLE menstrualCycle (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(20),
     isRegular BIT,
     aproxCycleDuration INT,
