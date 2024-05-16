@@ -13,14 +13,5 @@ services:
       MYSQL_PASSWORD: CYCL3C4RE
       MYSQL_DB: cycleCareDB
       MYSQL_ROOT_PASSWORD: CYCL3C4RE
-  cyclecare_restapi:
-    build: 
-      context: .
-    container_name: cyclecare_restapi_container
-    restart: always
-    ports:
-      - 8085:8085
-    depends_on:
-      - cyclecare_db
 volumes:
   init-scripts:
