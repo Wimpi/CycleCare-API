@@ -8,8 +8,7 @@ CREATE TABLE person (
     email VARCHAR(100) PRIMARY KEY,
     name NVARCHAR(70),
     firstLastname NVARCHAR(70),
-    secondLastName NVARCHAR(70),
-    birthdate DATE
+    secondLastName NVARCHAR(70)
 );
 
 CREATE TABLE user (

@@ -1,16 +1,21 @@
 const connection = require("../connection");
 
 const login = async (username, password) => {
-    const query = 'SELECT email, role FROM user WHERE username = ? AND password = ?';
+    const query = "SELECT u.email, u.role, p.name, p.firstLastname, p.secondLastName " +
+    "FROM user u JOIN person p ON u.email = p.email WHERE u.username = ? AND u.password = ?"
     let loginResult = null;
+
     try {
         const [rows, fields] = await (await connection).execute(query, [username, password]);
 
         if (rows.length > 0) {
-
+            const user = rows[0];
             loginResult = {
-                email: rows[0].email,
-                role: rows[0].role
+                email: user.email,
+                role: user.role,
+                name: user.name,
+                firstLastname: user.firstLastname,
+                secondLastName: user.secondLastName
             };
         }
     } catch (error) {
@@ -19,15 +24,15 @@ const login = async (username, password) => {
     }
 
     return loginResult;
-}
+};
 
 const postUser = async (user) => {
     try{
         await (await connection).beginTransaction();
 
         await (await connection).execute(
-            "INSERT INTO person (email, name, firstLastname, secondLastName, birthdate) VALUES (?, ?, ?, ?, ?)",
-            [user.email, user.name, user.firstLastName, user.secondLastName, user.birthdate]
+            "INSERT INTO person (email, name, firstLastname, secondLastName) VALUES (?, ?, ?, ?)",
+            [user.email, user.name, user.firstLastName, user.secondLastName]
         );
 
         await (await connection).execute(
@@ -41,7 +46,20 @@ const postUser = async (user) => {
         );
 
         await (await connection).commit();
-        return { message: 'User registered successfully' };
+
+        const [rows] = await (await connection).execute(
+            "SELECT email FROM person WHERE email = ?",
+            [user.email]
+        );
+
+        if (rows.length > 0) {
+            return {
+                email: rows[0].email
+            };
+        } else {
+            throw new Error('Email not found after insertion');
+        }
+
     } catch (error) {
         await (await connection).rollback();
         console.error("User register error:", error);
@@ -49,7 +67,18 @@ const postUser = async (user) => {
     }
 }
 
+const findUserByEmail = async (email) => {
+    const query = 'SELECT id, email FROM user WHERE email = ?';
+    const [rows] = await connection.execute(query, [email]);
+    return rows[0];
+};
+
+const updateUserPassword = async (email, newPassword) => {
+    const query = 'UPDATE user SET password = ? WHERE email = ?';
+    await connection.execute(query, [newPassword, email]);
+};
+
 module.exports = { 
     login, 
-    postUser 
+    postUser, findUserByEmail, updateUserPassword 
 };
