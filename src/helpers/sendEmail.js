@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, htmlContent) => {
     let transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -13,10 +15,23 @@ const sendEmail = async (to, subject, text) => {
         from: process.env.EMAIL,
         to,
         subject,
-        text
+        html: htmlContent
     };
 
-    await transporter.sendMail(mailOptions);
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully');
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
 };
 
-module.exports = sendEmail;
+const loadTemplate = (filePath, replacements) => {
+    const template = fs.readFileSync(filePath, 'utf8');
+    return Object.keys(replacements).reduce((template, key) => {
+        return template.replace(new RegExp(`{${key}}`, 'g'), replacements[key]);
+    }, template);
+};
+
+module.exports = { sendEmail, loadTemplate };

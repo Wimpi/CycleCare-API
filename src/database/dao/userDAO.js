@@ -6,7 +6,7 @@ const login = async (username, password) => {
     let loginResult = null;
 
     try {
-        const [rows, fields] = await (await connection).execute(query, [username, password]);
+        const [rows] = await (await connection).execute(query, [username, password]);
 
         if (rows.length > 0) {
             const user = rows[0];
@@ -68,14 +68,38 @@ const postUser = async (user) => {
 }
 
 const findUserByEmail = async (email) => {
-    const query = 'SELECT id, email FROM user WHERE email = ?';
-    const [rows] = await connection.execute(query, [email]);
-    return rows[0];
+    const query = 'SELECT email FROM user WHERE email = ?';
+    let idResult = null;
+
+    try {
+        const [rows] = await (await connection).execute(query, [email]);
+
+        if (rows.length > 0) {
+            idResult = rows[0].email;
+        }
+
+    } catch (error) {
+        console.error("Find user by email error:", error);
+        throw error;
+    }
+
+    return idResult;
 };
 
 const updateUserPassword = async (email, newPassword) => {
     const query = 'UPDATE user SET password = ? WHERE email = ?';
-    await connection.execute(query, [newPassword, email]);
+    try {
+        const [result] = await (await connection).execute(query, [newPassword, email]);
+
+        if (result.affectedRows > 0) {
+            return { success: true};
+        } else {
+            return { success: false};
+        }
+    } catch (error) {
+        console.error("Updating user password error:", error);
+        throw error;
+    }
 };
 
 module.exports = { 

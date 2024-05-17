@@ -1,8 +1,9 @@
 const { request, response } = require("express");
 const { generateJWT } = require('../helpers/createJWT');
 const { findUserByEmail, updateUserPassword } = require('../database/dao/userDAO');
-const sendEmail = require('../helpers/sendEmail');
+const {sendEmail, loadTemplate} = require('../helpers/sendEmail');
 const crypto = require('crypto');
+const path = require('path');
 const { login, 
         postUser, 
     } = require("../database/dao/userDAO");
@@ -52,8 +53,8 @@ const requestReset = async (req, res) => {
     const { email } = req.body;
 
     try {
-        const user = await findUserByEmail(email);
-        if (!user) {
+        const emailFound = await findUserByEmail(email);
+        if (emailFound == null) {
             return res.status(404).json({ message: "Correo no encontrado" });
         }
 
@@ -62,7 +63,10 @@ const requestReset = async (req, res) => {
 
         resetTokens[email] = { token: resetToken, expiry: expiryTime };
 
-        await sendEmail(user.email, 'Password Reset Request', `Tu código es ${resetToken}`);
+        const templatePath = path.join(__dirname, '../templates/email-template.html');
+        const htmlContent = loadTemplate(templatePath, { code: resetToken });
+
+        await sendEmail(emailFound, 'Password Reset Request', htmlContent);
 
         res.status(200).json({ message: "Correo enviado" });
     } catch (error) {
@@ -91,9 +95,13 @@ const resetPassword = async (req, res) => {
     }
 
     try {
-        await updateUserPassword(email, newPassword);
+        const updateResult = await updateUserPassword(email, newPassword);
         delete resetTokens[email];
-        res.status(200).json({ message: "Contraseña actualizada" });
+        if(updateResult.success == true){
+            res.status(200).json({ message: "Password updated successfully" });
+        } else {
+            res.status(400).json({ message: "No user found with the given email" });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error actualizando la contraseña. Inténtalo de nuevo más tarde" });
