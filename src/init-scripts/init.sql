@@ -4,42 +4,33 @@ CREATE DATABASE IF NOT EXISTS cycleCareDB;
 -- Seleccionar la base de datos
 USE cycleCareDB;
 
--- Crear las tablas
+CREATE TABLE person (
+    email VARCHAR(100) PRIMARY KEY,
+    name NVARCHAR(70),
+    firstLastname NVARCHAR(70),
+    secondLastName NVARCHAR(70)
+);
+
 CREATE TABLE user (
     username VARCHAR(20) PRIMARY KEY,
     password VARCHAR(10),
     role VARCHAR(30),
     email VARCHAR(100),
-    UNIQUE (email)
-);
-
-CREATE TABLE person (
-    email VARCHAR(100) PRIMARY KEY,
-    name NVARCHAR(70),
-    firstLastname NVARCHAR(70),
-    secondLastName NVARCHAR(70),
-    birthdate DATE
-);
-
-CREATE TABLE reminderType (
-    id INT PRIMARY KEY,
-    name VARCHAR(70),
-    icon VARBINARY(2000)
+    UNIQUE (email), 
+    FOREIGN KEY (email) REFERENCES person(email)
 );
 
 CREATE TABLE reminder (
-    id VARCHAR(50) PRIMARY KEY,
-    reminderType INT,
+    reminderId INT AUTO_INCREMENT PRIMARY KEY,
     description NVARCHAR(200),
     title NVARCHAR(70),
     creationDate DATETIME,
     username VARCHAR(20),
-    FOREIGN KEY (reminderType) REFERENCES reminderType(id),
     FOREIGN KEY (username) REFERENCES user(username)
 );
 
 CREATE TABLE content (
-    id VARCHAR(50) PRIMARY KEY,
+    contentId INT AUTO_INCREMENT PRIMARY KEY,
     title NVARCHAR(70),
     description NVARCHAR(200),
     creationDate DATETIME,
@@ -49,22 +40,22 @@ CREATE TABLE content (
 );
 
 CREATE TABLE rate (
-    id VARCHAR(50) PRIMARY KEY,
+    rateId INT AUTO_INCREMENT PRIMARY KEY,
     value INT,
     username VARCHAR(20),
     FOREIGN KEY (username) REFERENCES user(username)
 );
 
 CREATE TABLE contentRating (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    contentId VARCHAR(50),
-    rateId VARCHAR(50),
-    FOREIGN KEY (contentId) REFERENCES content(id),
-    FOREIGN KEY (rateId) REFERENCES rate(id)
+    contentRatingId INT AUTO_INCREMENT PRIMARY KEY,
+    contentId INT,
+    rateId INT,
+    FOREIGN KEY (contentId) REFERENCES content(contentId),
+    FOREIGN KEY (rateId) REFERENCES rate(rateId)
 );
 
 CREATE TABLE menstrualCycle (
-    id VARCHAR(50) PRIMARY KEY,
+    mestrualCycleId INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(20),
     isRegular BIT,
     aproxCycleDuration INT,
@@ -73,7 +64,7 @@ CREATE TABLE menstrualCycle (
 );
 
 CREATE TABLE period (
-    id VARCHAR(50) PRIMARY KEY,
+    periodId INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(20),
     startDate DATE,
     endDate DATE,
@@ -81,94 +72,90 @@ CREATE TABLE period (
 );
 
 CREATE TABLE menstrualFlow (
-    id INT PRIMARY KEY,
-    name VARCHAR(70),
-    icon VARBINARY(2000)
+    menstrualFlowId INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(70)
 );
 
 CREATE TABLE vaginalFlow (
-    id INT PRIMARY KEY,
-    name VARCHAR(70),
-    icon VARBINARY(2000)
+    vaginalFlowId INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(70)
 );
 
 CREATE TABLE cycleLog (
-    id VARCHAR(50) PRIMARY KEY,
+    cycleLogId INT AUTO_INCREMENT PRIMARY KEY,
     sleepHours INT,
     username VARCHAR(20),
     creationDate DATE,
     note NVARCHAR(50),
-    menstrualFlow INT,
-    vaginalFlow INT,
+    menstrualFlowId INT,
+    vaginalFlowId INT,
     FOREIGN KEY (username) REFERENCES user(username),
-    FOREIGN KEY (menstrualFlow) REFERENCES menstrualFlow(id),
-    FOREIGN KEY (vaginalFlow) REFERENCES vaginalFlow(id)
+    FOREIGN KEY (menstrualFlowId) REFERENCES menstrualFlow(menstrualFlowId),
+    FOREIGN KEY (vaginalFlowId) REFERENCES vaginalFlow(vaginalFlowId)
 );
 
 CREATE TABLE symptom (
-    id INT PRIMARY KEY,
+    symptomId INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(70)
 );
 
 CREATE TABLE mood (
-    id INT PRIMARY KEY,
-    name VARCHAR(70),
-    icon VARBINARY(2000)
+    moodId INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(70)
 );
 
 CREATE TABLE medication (
-    id INT PRIMARY KEY,
+    medicationId INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(70)
 );
 
 CREATE TABLE pill (
-    id INT PRIMARY KEY,
+    pillId INT AUTO_INCREMENT PRIMARY KEY,
     status VARCHAR(20)
 );
 
 CREATE TABLE pillLog (
-    id VARCHAR(50) PRIMARY KEY,
-    pill INT,
-    logId VARCHAR(50),
-    FOREIGN KEY (pill) REFERENCES pill(id),
-    FOREIGN KEY (logId) REFERENCES cycleLog(id)
+    pillLogId INT AUTO_INCREMENT PRIMARY KEY,
+    pillId INT,
+    cycleLogId INT,
+    FOREIGN KEY (pillId) REFERENCES pill(pillId),
+    FOREIGN KEY (cycleLogId) REFERENCES cycleLog(cycleLogId)
 );
 
 CREATE TABLE symptomLog (
-    id VARCHAR(50) PRIMARY KEY,
-    symptom INT,
-    logId VARCHAR(50),
-    FOREIGN KEY (symptom) REFERENCES symptom(id),
-    FOREIGN KEY (logId) REFERENCES cycleLog(id)
+    symptomLogId INT AUTO_INCREMENT PRIMARY KEY,
+    symptomId INT,
+    cycleLogId INT,
+    FOREIGN KEY (symptomId) REFERENCES symptom(symptomId),
+    FOREIGN KEY (cycleLogId) REFERENCES cycleLog(cycleLogId)
 );
 
 CREATE TABLE moodLog (
-    id VARCHAR(50) PRIMARY KEY,
-    mood INT,
-    logId VARCHAR(50),
-    FOREIGN KEY (mood) REFERENCES mood(id),
-    FOREIGN KEY (logId) REFERENCES cycleLog(id)
+    moodLogId INT AUTO_INCREMENT PRIMARY KEY,
+    moodId INT,
+    cycleLogId INT,
+    FOREIGN KEY (moodId) REFERENCES mood(moodId),
+    FOREIGN KEY (cycleLogId) REFERENCES cycleLog(cycleLogId)
 );
 
 CREATE TABLE medicationLog (
-    id VARCHAR(50) PRIMARY KEY,
-    medication INT,
-    logId VARCHAR(50),
-    FOREIGN KEY (medication) REFERENCES medication(id),
-    FOREIGN KEY (logId) REFERENCES cycleLog(id)
+    medicationLogId INT AUTO_INCREMENT PRIMARY KEY,
+    medicationId INT,
+    cycleLogId INT,
+    FOREIGN KEY (medicationId) REFERENCES medication(medicationId),
+    FOREIGN KEY (cycleLogId) REFERENCES cycleLog(cycleLogId)
 );
 
-
 CREATE TABLE birthControl (
-    id INT PRIMARY KEY,
+    birthControlId INT AUTO_INCREMENT PRIMARY KEY,
     status VARCHAR(20),
     name VARCHAR(70)
 );
 
 CREATE TABLE birthControlLog (
-    id VARCHAR(50) PRIMARY KEY,
-    birthcontrol INT,
-    logId VARCHAR(50),
-    FOREIGN KEY (birthcontrol) REFERENCES birthControl(id),
-    FOREIGN KEY (logId) REFERENCES cycleLog(id)
+    birthControlLogId INT AUTO_INCREMENT PRIMARY KEY,
+    birthControlId INT,
+    cycleLogId INT,
+    FOREIGN KEY (birthControlId) REFERENCES birthControl(birthControlId),
+    FOREIGN KEY (cycleLogId) REFERENCES cycleLog(cycleLogId)
 );
