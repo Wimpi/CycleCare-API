@@ -1,4 +1,5 @@
-const {Router}  = require ('express');
+const { Router } = require('express');
+const router = Router();
 
 const {
     userLogin,
@@ -8,11 +9,10 @@ const {
     resetPassword
 } = require('../controllers/userController');
 
-
-const router = Router();
 router.post('/login', userLogin);
 router.post('/registerUser', registerNewUser);
-router.post('/request-reset', requestReset);
-router.post('/verify-reset-code', verifyResetCode);
-router.post('/reset-password', resetPassword);
+router.post('/request-reset/:email', requestReset);
+router.post('/verify-reset-code/:email', verifyResetCode);
+router.post('/reset-password/:email', verifyResetCode, resetPassword);
+
 module.exports = router;

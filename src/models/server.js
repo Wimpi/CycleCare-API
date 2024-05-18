@@ -18,11 +18,12 @@ class Server{
 
     routes(){
         this.app.use("/apicyclecare/users", require('../routes/usersRoutes'));
+        this.app.use("/apicyclecare/reminders", require('../routes/reminderRoutes'));
     }
 
     listen() {
         this.app.listen(this.port, ()=>{
-            console.log(`Server listening in port ${this.port}`);
+            console.log(`Cycle Care Server listening in port ${this.port}`);
         });
     }
 }
