@@ -12,12 +12,12 @@ const resetTokens = {};
 const userLogin = async (req, res = response) => {
     const { username, password } = req.body;
     try {
-        const loginResult = await login(username, password);
+        const user = await login(username, password);
         const token = await generateJWT(username);
-        if(loginResult!=null){
+        if(user!=null){
             res.json({
-                loginResult,
-                token
+                token,
+                ...user
             });
         } else {
             res.status(404).json({ message: "Invalid credentials. Please check your username and password and try again"});
