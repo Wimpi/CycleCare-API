@@ -11,10 +11,9 @@ const { login,
 
 const resetTokens = {};
 const userLogin = async (req, res = response) => {
-
+    const {username, password} = req.body;
     try {
         const user = await login(username, password);
-
         if(user==null){
             res.status(HttpStatusCodes.BAD_REQUEST).json({
                 error: true,
@@ -113,17 +112,29 @@ const verifyResetCode = async (req, res) => {
     const record = resetTokens[email];
 
     if (!record || record.token !== token || record.expiry < Date.now()) {
-        return res.status(400).json({ message: "Código incorrecto o expirado" });
+        res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Incorrect code or expired."
+        });
+        return
     }
-
-    res.status(200).json({ message: "Código verificado" });
+    res.status(HttpStatusCodes.CREATED).json
+        ({
+            message: 'Code verified'
+        });
 };
 
 const resetPassword = async (req, res) => {
     const { email, newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
-        return res.status(400).json({ message: "Las contraseñas no coinciden" });
+        res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Passwords don't match"
+        });
+        return
     }
 
     try {
