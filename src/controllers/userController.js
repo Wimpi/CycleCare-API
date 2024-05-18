@@ -141,9 +141,17 @@ const resetPassword = async (req, res) => {
         const updateResult = await updateUserPassword(email, newPassword);
         delete resetTokens[email];
         if(updateResult.success == true){
-            res.status(200).json({ message: "Password updated successfully" });
+            
+            res.status(HttpStatusCodes.CREATED).json 
+            ({ 
+                message: 'Password updated successfully' 
+            });
         } else {
-            res.status(400).json({ message: "No user found with the given email" });
+            res.status(HttpStatusCodes.BAD_REQUEST).json({
+                error: true,
+                statusCode: HttpStatusCodes.BAD_REQUEST,
+                details: "No user found with the given email"
+            });
         }
     } catch (error) {
         console.error(error);
