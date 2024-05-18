@@ -17,7 +17,6 @@ const userLogin = async (req, res = response) => {
         if(loginResult!=null){
             res.json({
                 loginResult,
-                rol: loginResult.role,
                 token
             });
         } else {
