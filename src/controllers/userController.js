@@ -2,6 +2,7 @@ const { request, response } = require("express");
 const { generateJWT } = require('../helpers/createJWT');
 const { findUserByEmail, updateUserPassword } = require('../database/dao/userDAO');
 const {sendEmail, loadTemplate} = require('../helpers/sendEmail');
+const HttpStatusCodes = require('../helpers/enums');
 const crypto = require('crypto');
 const path = require('path');
 const { login, 
@@ -10,21 +11,31 @@ const { login,
 
 const resetTokens = {};
 const userLogin = async (req, res = response) => {
-    const { username, password } = req.body;
+
     try {
         const user = await login(username, password);
-        const token = await generateJWT(username);
-        if(user!=null){
-            res.json({
-                token,
-                ...user
+
+        if(user==null){
+            res.status(HttpStatusCodes.BAD_REQUEST).json({
+                error: true,
+                statusCode: HttpStatusCodes.BAD_REQUEST,
+                details: "Invalid credentials. Please check your username and password and try again"
             });
-        } else {
-            res.status(404).json({ message: "Invalid credentials. Please check your username and password and try again"});
+            return; 
         }
+        const token = await generateJWT(username);
+        res.status(HttpStatusCodes.CREATED)
+                .json({
+                    token,
+                    ...user
+                });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error logging in. Try again later"});
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error logging in. Try again later"
+        });
     }
 }
 
@@ -32,19 +43,29 @@ const registerNewUser = async(req, res = response) => {
     const {email, name, firstLastName, secondLastName, username, password, role, isRegular, aproxCycleDuration, aproxPeriodDuration} = req.body;
 
     if(!email || !name || !firstLastName || !secondLastName ||!username ||!password || !role || isRegular == undefined ||!aproxCycleDuration ||!aproxPeriodDuration){
-        return res.status(400).json({message: 'Information invalid'});
+        res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+        return; 
     }
 
     try {
         const user = {email, name, firstLastName, secondLastName, username, password, role, isRegular, aproxCycleDuration, aproxPeriodDuration};
         const result = await postUser(user);
-        return res.status(201).json({
+        res.status(HttpStatusCodes.CREATED).json
+        ({
             message: 'User registered succesfully',
             email: result.email
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error register user. Try again later"}); 
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error creating new user. Try again later"
+        });
     }
 }
 
@@ -54,7 +75,12 @@ const requestReset = async (req, res) => {
     try {
         const emailFound = await findUserByEmail(email);
         if (emailFound == null) {
-            return res.status(404).json({ message: "Correo no encontrado" });
+            res.status(HttpStatusCodes.BAD_REQUEST).json({
+                error: true,
+                statusCode: HttpStatusCodes.BAD_REQUEST,
+                details: "Email not found. Try again."
+            });
+            return; 
         }
 
         const resetToken = crypto.randomBytes(4).toString('hex');
@@ -67,10 +93,17 @@ const requestReset = async (req, res) => {
 
         await sendEmail(emailFound, 'Password Reset Request', htmlContent);
 
-        res.status(200).json({ message: "Correo enviado" });
+        res.status(HttpStatusCodes.CREATED).json
+        ({
+            message: 'Email sent. Check your inbox'
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error enviando el correo. Inténtalo de nuevo más tarde" });
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error sending email. Try again later"
+        });
     }
 };
 
@@ -103,7 +136,11 @@ const resetPassword = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error actualizando la contraseña. Inténtalo de nuevo más tarde" });
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error updating password. Try again later"
+        });
     }
 };
 
