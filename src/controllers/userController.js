@@ -173,4 +173,9 @@ const updatePassword = async (req, res) => {
     }
 };
 
-module.exports = { userLogin, registerNewUser, requestReset, verifyResetCode, resetPassword};
+module.exports = { 
+    userLogin, 
+    registerNewUser, 
+    requestReset, 
+    verifyResetCode, 
+    resetPassword};
