@@ -1,12 +1,15 @@
 const { request, response } = require("express");
 const { generateJWT } = require('../middleware/createJWT');
-const { findUserByEmail, updateUserPassword } = require('../database/dao/userDAO');
+const verifyResetCode = require('../middleware/validateResetCode');
 const {sendEmail, loadTemplate} = require('../utils/sendEmail');
 const HttpStatusCodes = require('../utils/enums');
 const crypto = require('crypto');
 const path = require('path');
 const { login, 
         postUser, 
+        findUserByEmail, 
+        updateUserPassword,
+        findUserByUsername
     } = require("../database/dao/userDAO");
 
 const resetTokens = {};
@@ -39,35 +42,63 @@ const userLogin = async (req, res = response) => {
     }
 }
 
-const registerNewUser = async(req, res = response) => {
-    const {email, name, firstLastName, secondLastName, username, password, role, isRegular, aproxCycleDuration, aproxPeriodDuration} = req.body;
+const registerNewUser = async (req, res = response) => {
+    const { email, name, firstLastName, secondLastName, username, password, role, isRegular, aproxCycleDuration, aproxPeriodDuration } = req.body;
 
-    if(!email || !name || !firstLastName || !secondLastName ||!username ||!password || !role || isRegular == undefined ||!aproxCycleDuration ||!aproxPeriodDuration){
-        res.status(HttpStatusCodes.BAD_REQUEST).json({
+    if (!email || !name || !firstLastName || !secondLastName || !username || !password || !role || isRegular == undefined || !aproxCycleDuration || !aproxPeriodDuration) {
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
             error: true,
             statusCode: HttpStatusCodes.BAD_REQUEST,
             details: "Invalid data. Please check your request and try again"
         });
-        return; 
     }
 
     try {
-        const user = {email, name, firstLastName, secondLastName, username, password, role, isRegular, aproxCycleDuration, aproxPeriodDuration};
-        const result = await postUser(user);
-        res.status(HttpStatusCodes.CREATED).json
-        ({
-            message: 'User registered succesfully',
+        const existingEmail = await findUserByEmail(email);
+        if (existingEmail) {
+            return res.status(HttpStatusCodes.BAD_REQUEST).json({
+                error: true,
+                statusCode: HttpStatusCodes.BAD_REQUEST,
+                details: "Email already registered. Please use a different email"
+            });
+        }
+
+        const existingUsername = await findUserByUsername(username);
+        if (existingUsername) {
+            return res.status(HttpStatusCodes.BAD_REQUEST).json({
+                error: true,
+                statusCode: HttpStatusCodes.BAD_REQUEST,
+                details: "Username already taken. Please choose a different username"
+            });
+        }
+
+        const newUser = {
+            email,
+            name,
+            firstLastName,
+            secondLastName,
+            username,
+            password,
+            role,
+            isRegular,
+            aproxCycleDuration,
+            aproxPeriodDuration
+        };
+
+        const result = await postUser(newUser);
+        return res.status(HttpStatusCodes.CREATED).json({
+            message: 'User registered successfully',
             email: result.email
         });
     } catch (error) {
         console.error(error);
-        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+        return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
             error: true,
             statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
             details: "Error creating new user. Try again later"
         });
     }
-}
+};
 
 const requestReset = async (req, res) => {
     const { email } = req.params;
@@ -106,23 +137,6 @@ const requestReset = async (req, res) => {
         });
     }
 };
-
-const verifyResetCode = async (req, res, next) => {
-    const { email } = req.params;
-    const { token } = req.body;
-
-    const record = resetTokens[email];
-
-    if (!record || record.token !== token || record.expiry < Date.now()) {
-        return res.status(HttpStatusCodes.UNAUTHORIZED).json({
-            error: true,
-            statusCode: HttpStatusCodes.UNAUTHORIZED,
-            details: "Invalid or expired reset code."
-        });
-    }
-    next();
-};
-
 const resetPassword = async (req, res) => {
     try {
         await updatePassword(req, res);
@@ -178,4 +192,4 @@ module.exports = {
     registerNewUser, 
     requestReset, 
     verifyResetCode, 
-    resetPassword};
+    resetPassword, resetTokens};
