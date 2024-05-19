@@ -55,6 +55,47 @@ const getReminderById = async (reminderId) => {
     }
 };
 
+const getRemindersByUser = async (username) => {
+    try {
+        const [rows] = await (await connection).execute(
+            'SELECT * FROM reminder WHERE username = ?',
+            [username]
+        );
+
+        return rows;
+    } catch (error) {
+        console.error('Error trying to get the reminders of the user: ', error);
+        throw error;
+    }
+};
+
+const deleteReminder = async (reminderId, username) => {
+    try {
+        const [rows] = await (await connection).execute(
+            'SELECT * FROM reminder WHERE reminderId = ? AND username = ?',
+            [reminderId, username]
+        );
+
+        if (rows.length === 0) {
+            return { success: false, message: 'No reminder found or permission denied' };
+        }
+
+        await (await connection).execute(
+            'DELETE FROM reminder WHERE reminderId = ?',
+            [reminderId]
+        );
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting reminder:', error);
+        throw error;
+    }
+};
+
 module.exports = {
-    createReminder, updateReminder, getReminderById,
+    createReminder,
+    updateReminder,
+    getReminderById,
+    getRemindersByUser,
+    deleteReminder
 };
