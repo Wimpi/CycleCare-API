@@ -13,7 +13,6 @@ const validateJWT = (req = request, res = response, next)=>{
         req.username = username;
         next();
     }catch(error){
-        console.log(error);
         res.status(401).json({
             msg:'Invalid token'
         })
