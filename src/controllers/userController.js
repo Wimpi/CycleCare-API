@@ -1,5 +1,5 @@
 const { request, response } = require("express");
-const { generateJWT } = require('../middleware/createJWT');
+const { generateJWT } = require('../utils/createJWT');
 const verifyResetCode = require('../middleware/validateResetCode');
 const {sendEmail, loadTemplate} = require('../utils/sendEmail');
 const HttpStatusCodes = require('../utils/enums');
