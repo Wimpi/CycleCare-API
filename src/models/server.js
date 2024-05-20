@@ -19,6 +19,7 @@ class Server{
     routes(){
         this.app.use("/apicyclecare/users", require('../routes/usersRoutes'));
         this.app.use("/apicyclecare/reminders", require('../routes/reminderRoutes'));
+        this.app.use("/apicyclecare/content", require('../routes/contentRoutes'));
     }
 
     listen() {
