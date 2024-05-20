@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
+const cron = require('node-cron');
 
 const sendEmail = async (to, subject, htmlContent) => {
     let transporter = nodemailer.createTransport({
@@ -34,4 +35,17 @@ const loadTemplate = (filePath, replacements) => {
     }, template);
 };
 
-module.exports = { sendEmail, loadTemplate };
+const scheduleReminderEmail = (email, subject, htmlContent, date) => {
+    const cronDate = new Date(date);
+    const cronExpression = `${cronDate.getMinutes()} ${cronDate.getHours()} ${cronDate.getDate()} ${cronDate.getMonth() + 1} *`;
+
+    cron.schedule(cronExpression, () => {
+        sendEmail(email, subject, htmlContent);
+    }, {
+        scheduled: true,
+        timezone: "America/Mexico_City"
+    });
+};
+
+
+module.exports = { sendEmail, loadTemplate, scheduleReminderEmail };

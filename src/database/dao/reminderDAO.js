@@ -55,10 +55,10 @@ const getReminderById = async (reminderId) => {
     }
 };
 
-const getRemindersByUser = async (username) => {
+const getCurrentRemindersByUser = async (username) => {
     try {
         const [rows] = await (await connection).execute(
-            'SELECT * FROM reminder WHERE username = ?',
+            'SELECT * FROM reminder WHERE username = ? AND creationDate > NOW()',
             [username]
         );
 
@@ -96,6 +96,6 @@ module.exports = {
     createReminder,
     updateReminder,
     getReminderById,
-    getRemindersByUser,
+    getCurrentRemindersByUser,
     deleteReminder
 };
