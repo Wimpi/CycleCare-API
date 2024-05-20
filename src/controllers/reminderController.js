@@ -9,9 +9,9 @@ const {
 const HttpStatusCodes = require('../utils/enums');
 
 const registerReminder = async (req, res) => {
-    const { username } = req;
     const {description, title, date, time} = req.body;
     const creationDate = `${date} ${time}`;
+    const { username } = req;
 
     try{
         const reminder = {description, title, creationDate, username};
