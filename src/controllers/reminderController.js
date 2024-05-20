@@ -6,29 +6,40 @@ const {
     deleteReminder
 } = require('../database/dao/reminderDAO');
 
+const {scheduleReminderEmail, loadTemplate} = require('../utils/sendEmail');
+const {
+    findUserByUsername
+} = require('../database/dao/userDAO');
+const path = require('path');
+
 const HttpStatusCodes = require('../utils/enums');
 
 const registerReminder = async (req, res) => {
-    const {description, title, date, time} = req.body;
+    const { description, title, date, time } = req.body;
     const creationDate = `${date} ${time}`;
     const { username } = req;
 
-    try{
-        const reminder = {description, title, creationDate, username};
+    try {
+        const user = await findUserByUsername(username);
+        const email = user.email;
+        const reminder = { description, title, creationDate, username, email }; // Incluye email en el recordatorio
         const result = await createReminder(reminder);
-        if(result.success){
-            res.status(HttpStatusCodes.CREATED)
-                .json({
-                    message: 'Reminder registered succesfully',
-                    reminderId: result.reminderId
-                });
+
+        if (result.success) {
+            const templatePath = path.join(__dirname, '../templates/reminder-template.html');
+            const htmlContent = loadTemplate(templatePath, { title, description, creationDate });
+            scheduleReminderEmail(email, title, htmlContent, creationDate);
+
+            res.status(HttpStatusCodes.CREATED).json({
+                message: 'Reminder registered successfully',
+                reminderId: result.reminderId
+            });
         } else {
             res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
                 error: true,
                 statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
                 details: "Error creating new reminder"
             });
-            return; 
         }
     } catch (error) {
         console.error(error);
@@ -38,7 +49,7 @@ const registerReminder = async (req, res) => {
             details: "Error creating new reminder. Try again later"
         });
     }
-}
+};
 
 const reminderUpdate = async (req, res) =>{
     const { reminderId } = req.params;

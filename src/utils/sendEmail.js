@@ -3,16 +3,16 @@ const fs = require('fs');
 const path = require('path');
 const cron = require('node-cron');
 
-const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_APP_PASSWORD
-    }
-});
-
 const sendEmail = async (to, subject, htmlContent) => {
-    const mailOptions = {
+    let transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_APP_PASSWORD
+        }
+    });
+
+    let mailOptions = {
         from: process.env.EMAIL,
         to,
         subject,
@@ -28,7 +28,7 @@ const sendEmail = async (to, subject, htmlContent) => {
     }
 };
 
-const loadResetCodeTemplate = (filePath, replacements) => {
+const loadTemplate = (filePath, replacements) => {
     const template = fs.readFileSync(filePath, 'utf8');
     return Object.keys(replacements).reduce((template, key) => {
         return template.replace(new RegExp(`{${key}}`, 'g'), replacements[key]);
@@ -43,8 +43,9 @@ const scheduleReminderEmail = (email, subject, htmlContent, date) => {
         sendEmail(email, subject, htmlContent);
     }, {
         scheduled: true,
-        timezone: "America/New_York" // Ajusta la zona horaria según sea necesario
+        timezone: "America/Mexico_City"
     });
 };
 
-module.exports = { sendEmail, loadResetCodeTemplate, scheduleReminderEmail };
+
+module.exports = { sendEmail, loadTemplate, scheduleReminderEmail };

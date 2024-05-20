@@ -1,7 +1,7 @@
 const { request, response } = require("express");
 const { generateJWT } = require('../middleware/createJWT');
 const verifyResetCode = require('../middleware/validateResetCode');
-const {sendEmail, loadResetCodeTemplate} = require('../utils/sendEmail');
+const {sendEmail, loadTemplate} = require('../utils/sendEmail');
 const HttpStatusCodes = require('../utils/enums');
 const crypto = require('crypto');
 const path = require('path');
@@ -121,7 +121,7 @@ const requestReset = async (req, res) => {
         resetTokens[email] = { token: resetToken, expiry: expiryTime };
 
         const templatePath = path.join(__dirname, '../templates/password-recovery-template.html');
-        const htmlContent = loadResetCodeTemplate(templatePath, { code: resetToken });
+        const htmlContent = loadTemplate(templatePath, { code: resetToken });
 
         await sendEmail(emailFound, 'Password Reset Request', htmlContent);
 
