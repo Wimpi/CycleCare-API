@@ -2,7 +2,7 @@ const {
     createReminder,
     updateReminder,
     getReminderById,
-    getRemindersByUser,
+    getCurrentRemindersByUser,
     deleteReminder
 } = require('../database/dao/reminderDAO');
 
@@ -92,7 +92,7 @@ const reminderUpdate = async (req, res) =>{
     }
 }
 
-const getUserReminders = async (req, res) => {
+const getCurrentUserReminders = async (req, res) => {
     const { username } = req;
 
     try {
@@ -104,7 +104,7 @@ const getUserReminders = async (req, res) => {
             });
         }
 
-        const reminders = await getRemindersByUser(username);
+        const reminders = await getCurrentRemindersByUser(username);
 
         if (!reminders || reminders.length === 0) {
             return res.status(HttpStatusCodes.NOT_FOUND).json({
@@ -155,4 +155,4 @@ const removeReminder = async (req, res) => {
 };
 
 
-module.exports = {registerReminder, reminderUpdate, getUserReminders, removeReminder};
+module.exports = {registerReminder, reminderUpdate, getCurrentUserReminders, removeReminder};
