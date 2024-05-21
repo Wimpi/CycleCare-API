@@ -13,7 +13,7 @@ CREATE TABLE person (
 
 CREATE TABLE user (
     username VARCHAR(20) PRIMARY KEY,
-    password VARCHAR(10),
+    password VARCHAR(200),
     role VARCHAR(30),
     email VARCHAR(100),
     UNIQUE (email), 
