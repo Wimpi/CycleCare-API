@@ -2,7 +2,6 @@
 //get all contenido
 //get un contenido
 //update contenido
-//calificar contenido
 //get promedio de calificacion por contenido
 
 const { error } = require('console');

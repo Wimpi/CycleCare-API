@@ -104,9 +104,9 @@ const getCurrentUserReminders = async (req, res) => {
             });
         }
 
-        const reminders = await getCurrentRemindersByUser(username);
+        const result = await getCurrentRemindersByUser(username);
 
-        if (!reminders || reminders.length === 0) {
+        if (!result || result.length === 0) {
             return res.status(HttpStatusCodes.NOT_FOUND).json({
                 error: true,
                 statusCode: HttpStatusCodes.NOT_FOUND,
@@ -114,7 +114,7 @@ const getCurrentUserReminders = async (req, res) => {
             });
         }
 
-        res.status(HttpStatusCodes.OK).json(reminders);
+        res.status(HttpStatusCodes.OK).json({reminders: result});
     } catch (error) {
         console.error(error);
 
