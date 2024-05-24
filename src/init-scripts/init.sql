@@ -25,6 +25,7 @@ CREATE TABLE reminder (
     description NVARCHAR(200),
     title NVARCHAR(70),
     creationDate DATETIME,
+    scheduleId VARCHAR(255),
     username VARCHAR(20),
     FOREIGN KEY (username) REFERENCES user(username)
 );

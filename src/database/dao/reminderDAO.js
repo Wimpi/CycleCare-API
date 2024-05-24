@@ -16,6 +16,16 @@ const createReminder = async (reminder) => {
     }
 }
 
+const updateReminderWithScheduleId = async (reminderId, scheduleId) => {
+    try {
+        const query = "UPDATE reminder SET scheduleId = ? WHERE reminderId = ?";
+        await (await connection).execute(query, [scheduleId, reminderId]);
+    } catch (error) {
+        console.error('Error al actualizar el recordatorio con el ID de programación: ', error);
+        throw error;
+    }
+};
+
 const updateReminder = async (reminderId, newReminderData) => {
     const {description, title, creationDate, username} = newReminderData;
 
@@ -58,7 +68,7 @@ const getReminderById = async (reminderId) => {
 const getCurrentRemindersByUser = async (username) => {
     try {
         const [rows] = await (await connection).execute(
-            'SELECT * FROM reminder WHERE username = ? AND creationDate > NOW()',
+            'SELECT * FROM reminder WHERE username = ? AND creationDate >= MICROSECOND(NOW()) AND YEAR(creationDate) >= YEAR(NOW()) AND MONTH(creationDate) >= MONTH(NOW()) AND DAY(creationDate) >= DAY(NOW())',
             [username]
         );
 
@@ -96,6 +106,6 @@ module.exports = {
     createReminder,
     updateReminder,
     getReminderById,
-    getCurrentRemindersByUser,
+    getCurrentRemindersByUser, updateReminderWithScheduleId,
     deleteReminder
 };
