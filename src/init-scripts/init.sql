@@ -13,7 +13,7 @@ CREATE TABLE person (
 
 CREATE TABLE user (
     username VARCHAR(20) PRIMARY KEY,
-    password VARCHAR(10),
+    password VARCHAR(200),
     role VARCHAR(30),
     email VARCHAR(100),
     UNIQUE (email), 
@@ -25,6 +25,7 @@ CREATE TABLE reminder (
     description NVARCHAR(200),
     title NVARCHAR(70),
     creationDate DATETIME,
+    scheduleId VARCHAR(255),
     username VARCHAR(20),
     FOREIGN KEY (username) REFERENCES user(username)
 );
