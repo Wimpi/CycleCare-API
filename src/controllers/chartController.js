@@ -26,6 +26,7 @@ const getSleepChartInformation = async (req, res) => {
             });
         }
 
+        
         res.status(HttpStatusCodes.OK).json(sleepHours);
     }catch(error){
         console.error(error);
