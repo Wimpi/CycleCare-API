@@ -5,13 +5,54 @@
 //get promedio de calificacion por contenido
 
 const { error } = require('console');
+const fs = require('fs').promises;
+
 const {
     rateContent, 
-    getContent
+    getContent, 
+    registerArticle
 } = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
 const { stat } = require('fs');
+const path = require('path');
+
+const publishContent = async (req, res) => {
+    const {title, description, creationDate, image} = req.body;    
+    const {username} = req;
+    try{
+
+        const directory = path.join(__dirname, '..','multimedia');
+        const filename = `image_${Date.now()}.bmp`
+
+        await fs.writeFile(path.join(directory, filename), imageBuffer);
+
+        const article = {title, description, creationDate, filename, username}
+        const result = await registerArticle(article);
+        
+        if(result.success) {
+            res.status(HttpStatusCodes.CREATED).json({
+                error: false,
+                statusCode: HttpStatusCodes.CREATED,
+                details: "Article created"});
+                
+        } else { 
+            res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+                error: true,
+                statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+                details: "Error creating new article"
+            });
+        }
+
+    }catch(error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error:true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error trying to publish content. Try again later"
+        });
+    }
+}
 
 const contentRate = async (req, res) => {
     const {contentId} = req.params;
@@ -66,4 +107,4 @@ const getInformativeContent = async(req, res) => {
     }
 };
 
-module.exports = {contentRate, getInformativeContent};
+module.exports = {contentRate, getInformativeContent, publishContent};
