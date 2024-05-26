@@ -1,6 +1,23 @@
 const connection = require("../connection");
 
 
+const registerArticle = async(article) =>{
+    try {
+        const query = "INSERT INTO content (title, description, creationDate, media, username) VALUES (?, ?, ?, ?, ?)"
+
+        await(await connection).execute(
+            query, 
+            [article.title, article.description, article.creationDate, article.filename, article.username]
+        );
+        return {success: true}
+    } catch (error) {
+        await (await connection).rollback();
+        console.error("Article register error:", error);
+        throw error;
+    }
+}
+
+
 const rateContent = async (contentId, rateData) => {
     const {rating, username} = rateData;
 
@@ -53,5 +70,6 @@ const getContent = async() => {
 
 module.exports = {
     rateContent, 
-    getContent
+    getContent, 
+    registerArticle
 };
