@@ -35,7 +35,7 @@ CREATE TABLE content (
     title NVARCHAR(70),
     description NVARCHAR(200),
     creationDate DATETIME,
-    media VARBINARY(2000),
+    media VARCHAR(50),
     username VARCHAR(20),
     FOREIGN KEY (username) REFERENCES user(username)
 );
