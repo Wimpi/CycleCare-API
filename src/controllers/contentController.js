@@ -22,12 +22,11 @@ const directory = path.join(__dirname, '..', 'multimedia');
 const publishContent = async (req, res) => {
     const {title, description, creationDate, image} = req.body;    
     const {username} = req;
+    console.log("Sí pasé por aquí");
     try{
         const filename = `image_${Date.now()}.jpg`
         saveImage(image, filename)
-
-        const date = moment(creationDate, "DD/MM/YYYY HH:mm:ss").toDate();
-        const article = {title, description, date, filename, username}
+        const article = {title, description, creationDate, filename, username}
         const result = await registerArticle(article);
         
         if(result.success) {
@@ -37,6 +36,7 @@ const publishContent = async (req, res) => {
                 details: "Article created"});
                 
         } else { 
+            console.error("No he podido registrar el contenido");
             res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
                 error: true,
                 statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,

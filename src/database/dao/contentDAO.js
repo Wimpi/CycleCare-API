@@ -6,7 +6,7 @@ const registerArticle = async(article) =>{
         const query = "INSERT INTO content (title, description, creationDate, media, username) VALUES (?, ?, ?, ?, ?)";
         await(await connection).execute(
             query, 
-            [article.title, article.description, article.date, article.filename, article.username]
+            [article.title, article.description, article.creationDate, article.filename, article.username]
         );
         return {success: true}
     } catch (error) {
