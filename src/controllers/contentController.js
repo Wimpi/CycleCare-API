@@ -5,7 +5,8 @@
 //get promedio de calificacion por contenido
 
 const { error } = require('console');
-const fs = require('fs').promises;
+const fs = require('fs');
+const moment = require('moment');
 
 const {
     rateContent, 
@@ -14,20 +15,19 @@ const {
 } = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
-const { stat } = require('fs');
 const path = require('path');
+const { match } = require('assert');
+const directory = path.join(__dirname, '..', 'multimedia');
 
 const publishContent = async (req, res) => {
     const {title, description, creationDate, image} = req.body;    
     const {username} = req;
     try{
+        const filename = `image_${Date.now()}.jpg`
+        saveImage(image, filename)
 
-        const directory = path.join(__dirname, '..','multimedia');
-        const filename = `image_${Date.now()}.bmp`
-
-        await fs.writeFile(path.join(directory, filename), imageBuffer);
-
-        const article = {title, description, creationDate, filename, username}
+        const date = moment(creationDate, "DD/MM/YYYY HH:mm:ss").toDate();
+        const article = {title, description, date, filename, username}
         const result = await registerArticle(article);
         
         if(result.success) {
@@ -52,6 +52,19 @@ const publishContent = async (req, res) => {
             details: "Error trying to publish content. Try again later"
         });
     }
+}
+
+function saveImage(base64Image, filename){
+    const matches = base64Image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    let imageData = base64Image;
+
+    if(matches){
+        imageData = matches[2];
+    }
+
+    const imageBuffer = Buffer.from(imageData, 'base64');
+    const filePath = path.join(directory, filename);
+    fs.writeFileSync(filePath, imageBuffer);
 }
 
 const contentRate = async (req, res) => {
