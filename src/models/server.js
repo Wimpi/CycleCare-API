@@ -16,12 +16,14 @@ class Server{
         this.app.use(express.static('public'));
     }
 
+
     routes(){
         this.app.use("/apicyclecare/users", require('../routes/usersRoutes'));
         this.app.use("/apicyclecare/reminders", require('../routes/reminderRoutes'));
         this.app.use("/apicyclecare/logs", require('../routes/cycleLogRoutes'));
         this.app.use("/apicyclecare/content", require('../routes/contentRoutes'));
         this.app.use("/apicyclecare/chart", require('../routes/chartRoutes'));
+        this.app.use("/images", express.static('multimedia'));
     }
 
     listen() {

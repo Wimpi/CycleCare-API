@@ -11,7 +11,8 @@ const moment = require('moment');
 const {
     rateContent, 
     getContent, 
-    registerArticle
+    registerArticle, 
+    getArticlesByUsername
 } = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
@@ -120,4 +121,28 @@ const getInformativeContent = async(req, res) => {
     }
 };
 
-module.exports = {contentRate, getInformativeContent, publishContent};
+const getArticleByMedic = async(req, res) => {
+    const {username} = req;
+    
+    try{
+        const result = await getArticlesByUsername(username);
+            if(!result || result.length === 0){
+                return res.status(HttpStatusCodes.NOT_FOUND).json({
+                    error:true, 
+                    statusCode: HttpStatusCodes.NOT_FOUND, 
+                    details: "No articles found for the user"
+            });
+        }
+        res.status(HttpStatusCodes.OK).json({articles: result});
+
+    } catch (error){
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true, 
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
+            details: "Error retrieving articles. Try again later"
+        });
+    }
+};
+
+module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic};

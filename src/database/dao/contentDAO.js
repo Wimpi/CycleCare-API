@@ -64,11 +64,27 @@ const getContent = async() => {
     }
 };
 
+const getArticlesByUsername = async(username) => {
+    try{
+        const query = 'SELECT * FROM content WHERE username = ?'
+
+        const [rows] = await(await connection).execute(
+            query, 
+            [username]
+        );
+
+        return rows;
+    } catch (error) {
+        console.error('Error trying to get articles from the database');
+        throw error;
+    }
+};
+
 //Método para recuperar contenido por id
-//Método para recuperar contenido de un usuario en específico para los 100tificos 
 
 module.exports = {
     rateContent, 
     getContent, 
-    registerArticle
+    registerArticle, 
+    getArticlesByUsername
 };
