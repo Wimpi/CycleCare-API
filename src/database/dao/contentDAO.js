@@ -3,8 +3,7 @@ const connection = require("../connection");
 
 const registerArticle = async(article) =>{
     try {
-        const query = "INSERT INTO content (title, description, creationDate, media, username) VALUES (?, ?, ?, ?, ?)"
-
+        const query = "INSERT INTO content (title, description, creationDate, media, username) VALUES (?, ?, ?, ?, ?)";
         await(await connection).execute(
             query, 
             [article.title, article.description, article.creationDate, article.filename, article.username]
@@ -65,11 +64,27 @@ const getContent = async() => {
     }
 };
 
+const getArticlesByUsername = async(username) => {
+    try{
+        const query = 'SELECT * FROM content WHERE username = ?'
+
+        const [rows] = await(await connection).execute(
+            query, 
+            [username]
+        );
+
+        return rows;
+    } catch (error) {
+        console.error('Error trying to get articles from the database');
+        throw error;
+    }
+};
+
 //Método para recuperar contenido por id
-//Método para recuperar contenido de un usuario en específico para los 100tificos 
 
 module.exports = {
     rateContent, 
     getContent, 
-    registerArticle
+    registerArticle, 
+    getArticlesByUsername
 };

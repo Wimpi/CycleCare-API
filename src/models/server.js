@@ -1,5 +1,4 @@
 const express = require ('express');
-
 const cors = require ('cors');
 
 class Server{
@@ -12,9 +11,11 @@ class Server{
 
     middleware(){
         this.app.use(cors());
-        this.app.use(express.json());
+        this.app.use(express.json({ limit: '50mb' }));
+        this.app.use(express.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(express.static('public'));
     }
+
 
     routes(){
         this.app.use("/apicyclecare/users", require('../routes/usersRoutes'));
@@ -22,6 +23,7 @@ class Server{
         this.app.use("/apicyclecare/logs", require('../routes/cycleLogRoutes'));
         this.app.use("/apicyclecare/content", require('../routes/contentRoutes'));
         this.app.use("/apicyclecare/chart", require('../routes/chartRoutes'));
+        this.app.use("/images", express.static('multimedia'));
     }
 
     listen() {

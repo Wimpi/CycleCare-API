@@ -106,6 +106,7 @@ module.exports = {
     createReminder,
     updateReminder,
     getReminderById,
-    getCurrentRemindersByUser, updateReminderWithScheduleId,
+    getCurrentRemindersByUser, 
+    updateReminderWithScheduleId,
     deleteReminder
 };
