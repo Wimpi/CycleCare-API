@@ -80,11 +80,47 @@ const getArticlesByUsername = async(username) => {
     }
 };
 
+const getContentById = async(contentId) => {
+    try{
+        const query = 'SELECT * FROM content WHERE contentId =  ?'
+        const [rows] = await(await connection).execute(
+            query, 
+            [contentId]
+        );
+        return rows
+    } catch (error) {
+        console.error('Error trying to get article from database');
+        throw error;
+    }
+};
+
+const updateArticle = async(article) => {
+
+    try{
+        const query = "UPDATE content SET title = ?, description = ?, media = ? WHERE contentId = ?";
+        const [result] = await (await connection).execute(
+          query, 
+          [article.title, article.description, article.filename, article.contentId]
+        );
+
+        if(result.affectedRows>0){
+            return {success: true};
+        } else {
+            return {success:false};
+        }
+
+    } catch (error) {
+        console.error('Error trying to update informative content from DAO: ', error);
+        throw error;
+    }
+}
+
 //Método para recuperar contenido por id
 
 module.exports = {
     rateContent, 
     getContent, 
     registerArticle, 
-    getArticlesByUsername
-};
+    getArticlesByUsername, 
+    getContentById, 
+    updateArticle};

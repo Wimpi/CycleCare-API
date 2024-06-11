@@ -5,7 +5,9 @@ const{
     contentRate, 
     getInformativeContent, 
     publishContent, 
-    getArticleByMedic} = require('../controllers/contentController');
+    getArticleByMedic, 
+    getArticleById, 
+    updateInformativeContent} = require('../controllers/contentController');
 
 const router = Router();
 
@@ -13,5 +15,7 @@ router.post('/create-rating/:contentId', [validateJWT], contentRate);
 router.get('/obtain-informative-content', [validateJWT], getInformativeContent);
 router.post('/publish-article', [validateJWT], publishContent);
 router.get('/get-articles-by-medic', [validateJWT], getArticleByMedic);
+router.get('/get-article-by-id/:contentId', [validateJWT], getArticleById);
+router.post('/update-informative-content', [validateJWT], updateInformativeContent)
 
 module.exports = router;
