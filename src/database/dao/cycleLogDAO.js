@@ -165,8 +165,6 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
 
 const getCycleLogsByMonthAndUser = async (month, year, username) => {
     try {
-        const conn = await connection;
-
         const query = `
             SELECT * FROM cycleLog
             WHERE username = ? AND MONTH(creationDate) = ? AND YEAR(creationDate) = ?

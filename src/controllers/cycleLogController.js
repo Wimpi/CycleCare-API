@@ -83,7 +83,7 @@ const getCycleLogs = async (req, res) => {
                 details: "No cycle logs found for the specified month and user"
             });
         } else {
-            res.status(HttpStatusCodes.OK).json(result);
+            res.status(HttpStatusCodes.OK).json({cycleLogs: result});
         }
     } catch (error) {
         console.error(error);
