@@ -95,7 +95,6 @@ const getContentById = async(contentId) => {
 };
 
 const updateArticle = async(article) => {
-
     try{
         const query = "UPDATE content SET title = ?, description = ?, media = ? WHERE contentId = ?";
         const [result] = await (await connection).execute(
@@ -115,6 +114,20 @@ const updateArticle = async(article) => {
     }
 }
 
+const getAvarage = async(contentId) => {
+    try{
+        const query = "SELECT AVG(r.value) AS contentAVG FROM contentRating cr JOIN rate r ON cr.rateId = r.rateId WHERE cr.contentId = ?"
+        const [rows] = await(await connection).execute(
+            query, 
+            [contentId]
+        );
+        return rows;
+    } catch(error) {
+        console.error('Error trying to get AVG: ', error);
+        throw error;
+    }
+}
+
 //Método para recuperar contenido por id
 
 module.exports = {
@@ -123,4 +136,5 @@ module.exports = {
     registerArticle, 
     getArticlesByUsername, 
     getContentById, 
-    updateArticle};
+    updateArticle, 
+    getAvarage};

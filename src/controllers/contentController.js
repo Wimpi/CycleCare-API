@@ -13,7 +13,8 @@ const {
     registerArticle, 
     getArticlesByUsername, 
     getContentById, 
-    updateArticle} = require('../database/dao/contentDAO');
+    updateArticle, 
+    getAvarage} = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
 const path = require('path');
@@ -199,6 +200,29 @@ const updateInformativeContent = async (req, res) => {
     }
 }
 
+const getAverageByContentId = async(req, res) => {
+    const {contentId} = req.params;
+    try{
+        const result = await getAvarage(contentId);
+        if(result == null){
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
+                error:true, 
+                statusCode: HttpStatusCodes.NOT_FOUND, 
+                details: "No articles found for the user"
+            });
+        }else{
+            res.status(HttpStatusCodes.OK).json(result);
+        }
+    }catch (error){
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true, 
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
+            details: "Error retrieving articles. Try again later"
+        });
+    }
+}
+
 function deleteImage(imageName){
     const filePath = path.join(directory, imageName);
     fs.unlink(filePath, (err) => {
@@ -210,4 +234,4 @@ function deleteImage(imageName){
     });
 }
 
-module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent};
+module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId};
