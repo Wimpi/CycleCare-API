@@ -2,7 +2,9 @@ const {
     createCycleLog, 
     deleteCycleLog, 
     updateCycleLog, 
-    getCycleLogsByMonthAndUser
+    getCycleLogsByMonthAndUser,
+    getMenstrualFlow,
+    getVaginalFlow
 } = require('../database/dao/cycleLogDAO');
 
 const HttpStatusCodes = require('../utils/enums');
@@ -71,20 +73,20 @@ const updateCycleLogEntry = async (req, res) => {
 
 const getCycleLogs = async (req, res) => {
     const { username } = req;
-    const { month, year } = req.query;
-
+    const { month, year } = req.params;
+    
     try {
-        const result = await getCycleLogsByMonthAndUser(month, year, username);
+        const detailedCycleLogs = await getDetailedCycleLogs(month, year, username);
 
-        if (!result || result.length === 0) {
-            res.status(HttpStatusCodes.NOT_FOUND).json({
+        if (!detailedCycleLogs || detailedCycleLogs.length === 0) {
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
                 error: true,
                 statusCode: HttpStatusCodes.NOT_FOUND,
                 details: "No cycle logs found for the specified month and user"
             });
-        } else {
-            res.status(HttpStatusCodes.OK).json({cycleLogs: result});
         }
+
+        res.status(HttpStatusCodes.OK).json({ cycleLogs: detailedCycleLogs });
     } catch (error) {
         console.error(error);
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -93,6 +95,44 @@ const getCycleLogs = async (req, res) => {
             details: "Error retrieving cycle logs. Try again later"
         });
     }
+};
+
+const getDetailedCycleLogs = async (month, year, username) => {
+    const cycleLogs = await getCycleLogsByMonthAndUser(month, year, username);
+
+    if (!cycleLogs || cycleLogs.length === 0) {
+        return [];
+    }
+
+    const detailedCycleLogs = await Promise.all(cycleLogs.map(async (log) => {
+        const symptoms = await getSymptomsByCycleLogId(log.cycleLogId);
+        const moods = await getMoodsByCycleLogId(log.cycleLogId);
+        const medications = await getMedicationsByCycleLogId(log.cycleLogId);
+        const pills = await getPillsByCycleLogId(log.cycleLogId);
+        const birthControl = await getBirthControlByCycleLogId(log.cycleLogId);
+        const cycleLogId = log.cycleLogId;
+        const sleepHours = log.sleepHours;
+        const username = log.username;
+        const note = log.note;
+        const mensturalFlow = getMenstrualFlow(log.menstrualFlowId);
+        const vaginalFlow = getVaginalFlow(log.vaginalFlowId);
+
+        return {
+            cycleLogId,
+            mensturalFlow,
+            vaginalFlow,
+            sleepHours,
+            username,
+            note,
+            symptoms,
+            moods,
+            medications,
+            pills,
+            birthControl
+        };
+    }));
+
+    return detailedCycleLogs;
 };
 
 const removeCycleLog = async (req, res) => {

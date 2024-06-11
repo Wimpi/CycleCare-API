@@ -177,9 +177,116 @@ const getCycleLogsByMonthAndUser = async (month, year, username) => {
     }
 };
 
+const getSymptomsByCycleLogId = async (cycleLogId) => {
+    try {
+        const query = `
+            SELECT s.symptomId, s.name
+            FROM symptomLog sl
+            JOIN symptoms s ON sl.symptomId = s.symptomId
+            WHERE sl.cycleLogId = ?
+        `;
+        const [rows] = await (await connection).execute(query, [cycleLogId]);
+        return rows;
+    } catch (error) {
+        console.error('Error al obtener los síntomas:', error);
+        throw error;
+    }
+};
+
+const getMoodsByCycleLogId = async (cycleLogId) => {
+    try {
+        const query = `
+            SELECT m.moodId, m.name
+            FROM moodLog ml
+            JOIN moods m ON ml.moodId = m.moodId
+            WHERE ml.cycleLogId = ?
+        `;
+        const [rows] = await (await connection).execute(query, [cycleLogId]);
+        return rows;
+    } catch (error) {
+        console.error('Error al obtener los moods:', error);
+        throw error;
+    }
+};
+
+const getMedicationsByCycleLogId = async (cycleLogId) => {
+    try {
+        const query = `
+            SELECT m.medicationId, m.name
+            FROM medicationLog ml
+            JOIN medications m ON ml.medicationId = m.medicationId
+            WHERE ml.cycleLogId = ?
+        `;
+        const [rows] = await (await connection).execute(query, [cycleLogId]);
+        return rows;
+    } catch (error) {
+        console.error('Error al obtener los medicamentos:', error);
+        throw error;
+    }
+};
+
+const getPillsByCycleLogId = async (cycleLogId) => {
+    try {
+        const query = `
+            SELECT p.pillId, p.status
+            FROM pillLog pl
+            JOIN pills p ON pl.pillId = p.pillId
+            WHERE pl.cycleLogId = ?
+        `;
+        const [rows] = await (await connection).execute(query, [cycleLogId]);
+        return rows;
+    } catch (error) {
+        console.error('Error al obtener las píldoras:', error);
+        throw error;
+    }
+};
+
+const getBirthControlByCycleLogId = async (cycleLogId) => {
+    try {
+        const query = `
+            SELECT bc.birthControlId, bc.name, bc.status
+            FROM birthControlLog bcl
+            JOIN birthControls bc ON bcl.birthControlId = bc.birthControlId
+            WHERE bcl.cycleLogId = ?
+        `;
+        const [rows] = await (await connection).execute(query, [cycleLogId]);
+        return rows;
+    } catch (error) {
+        console.error('Error al obtener el método anticonceptivo:', error);
+        throw error;
+    }
+};
+
+const getMenstrualFlow = async (menstrualFlowId) =>{
+    try{
+        const query = "SELECT * FROM mensturalFlow WHERE menstrualFlowId = ?";
+        const [rows] = await (await connection).execute(query,[menstrualFlowId]);
+        return rows;
+    }  catch (error) {
+        console.error('Error al obtener el flujo menstrual:', error);
+        throw error;
+    }
+}
+
+const getVaginalFlow = async(vaginalFlowId) =>{
+    try {
+        const query = "SELECT * FROM vaginalFlow WHERE vaginalFlow = ?"
+        const [rows] = await (await connection).execute(query, [vaginalFlowId]);
+        return rows;
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
     createCycleLog,
     deleteCycleLog,
     updateCycleLog,
-    getCycleLogsByMonthAndUser
+    getCycleLogsByMonthAndUser,
+    getSymptomsByCycleLogId,
+    getMoodsByCycleLogId,
+    getMedicationsByCycleLogId,
+    getPillsByCycleLogId,
+    getBirthControlByCycleLogId, 
+    getMenstrualFlow, getVaginalFlow
 };

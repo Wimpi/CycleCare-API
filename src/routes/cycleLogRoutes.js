@@ -11,7 +11,7 @@ const router = Router();
 
 router.post('/register-cycle-log', [validateJWT], registerCycleLog)
 router.post('/update-cycle-log/:cycleLogId', [validateJWT], updateCycleLogEntry);
-router.get('/user-cycle-logs', [validateJWT], getCycleLogs);
+router.get('/user-cycle-logs/:year/:month', [validateJWT], getCycleLogs);
 router.delete('/cycle-log/:logId', [validateJWT],  removeCycleLog);
 
 module.exports = router;
