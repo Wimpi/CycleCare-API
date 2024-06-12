@@ -10,10 +10,10 @@ const {
 const HttpStatusCodes = require('../utils/enums');
 
 const registerCycleLog = async (req, res) => {
-    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls } = req.body;
+    const { sleepHours, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls } = req.body;
     const { username } = req;
 
-    const cycleLog = { sleepHours, username, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls };
+    const cycleLog = { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls };
 
     try {
         const result = await createCycleLog(cycleLog);

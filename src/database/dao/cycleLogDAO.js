@@ -1,58 +1,99 @@
 const connection = require("../connection");
 
 const createCycleLog = async (cycleLog) => {
-    const { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControlId } = cycleLog;
-
+    const { username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = cycleLog;
+    console.log(cycleLog);
     try {
-
         await (await connection).beginTransaction();
 
+        // Insertar el registro principal en cycleLog (solo username)
         const [result] = await (await connection).execute(
-            'INSERT INTO cycleLog (sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId) VALUES (?, ?, ?, ?, ?, ?)',
-            [sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId]
+            'INSERT INTO cycleLog (username, creationDate) VALUES (?, ?)',
+            [username, creationDate]
         );
 
         const cycleLogId = result.insertId;
 
-        for (const symptomId of symptoms) {
+        // Insertar note si no es null
+        if (note !== null) {
             await (await connection).execute(
-                'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
-                [symptomId, cycleLogId]
-            );
-        }
-        
-        for (const moodId of moods) {
-            await (await connection).execute(
-                'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
-                [moodId, cycleLogId]
-            );
-        }
-        
-        for (const medicationId of medications) {
-            await (await connection).execute(
-                'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
-                [medicationId, cycleLogId]
-            );
-        }
-        
-        for (const pillId of pills) {
-            await (await connection).execute(
-                'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
-                [pillId, cycleLogId]
-            );
-        }
-        
-        if (birthControlId) {
-            await (await connection).execute(
-                'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
-                [birthControlId, cycleLogId]
+                'UPDATE cycleLog SET note = ? WHERE cycleLogId = ?',
+                [note, cycleLogId]
             );
         }
 
+        // Insertar menstrualFlowId si no es null
+        if (menstrualFlowId !== null) {
+            await (await connection).execute(
+                'UPDATE cycleLog SET menstrualFlowId = ? WHERE cycleLogId = ?',
+                [menstrualFlowId, cycleLogId]
+            );
+        }
+
+        // Insertar vaginalFlowId si no es null
+        if (vaginalFlowId !== null) {
+            await (await connection).execute(
+                'UPDATE cycleLog SET vaginalFlowId = ? WHERE cycleLogId = ?',
+                [vaginalFlowId, cycleLogId]
+            );
+        }
+
+        // Insertar síntomas si no es null y tiene elementos
+        if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
+            for (const symptomId of symptoms) {
+                await (await connection).execute(
+                    'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
+                    [symptomId, cycleLogId]
+                );
+            }
+        }
+
+        // Insertar moods si no es null y tiene elementos
+        if (moods !== null && Array.isArray(moods) && moods.length > 0) {
+            for (const moodId of moods) {
+                await (await connection).execute(
+                    'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
+                    [moodId, cycleLogId]
+                );
+            }
+        }
+
+        // Insertar medications si no es null y tiene elementos
+        if (medications !== null && Array.isArray(medications) && medications.length > 0) {
+            for (const medicationId of medications) {
+                await (await connection).execute(
+                    'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
+                    [medicationId, cycleLogId]
+                );
+            }
+        }
+
+        // Insertar pills si no es null y tiene elementos
+        if (pills !== null && Array.isArray(pills) && pills.length > 0) {
+            for (const pillId of pills) {
+                await (await connection).execute(
+                    'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
+                    [pillId, cycleLogId]
+                );
+            }
+        }
+
+        // Insertar birthControls si no es null y tiene elementos
+        if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
+            for (const birthControlId of birthControls) {
+                await (await connection).execute(
+                    'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
+                    [birthControlId, cycleLogId]
+                );
+            }
+        }
+
+        // Commit de la transacción
         await (await connection).commit();
 
         return { success: true, cycleLogId };
     } catch (error) {
+        // Rollback en caso de error
         await (await connection).rollback();
         console.error('Error al crear el ciclo:', error);
         throw error;
@@ -89,74 +130,109 @@ const deleteCycleLog = async (cycleLogId, username) => {
 };
 
 const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
-    const { sleepHours, note, menstrualFlowId, vaginalFlowId, username, symptoms, moods, medications, pills, birthControlId } = updatedCycleLog;
+    const { note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = updatedCycleLog;
 
     try {
         await (await connection).beginTransaction();
 
-        const query = `
-            UPDATE cycleLog
-            SET sleepHours = ?, note = ?, menstrualFlowId = ?, vaginalFlowId = ?
-            WHERE cycleLogId = ? AND username = ?
-        `;
-        const [result] = await (await connection).execute(query, [
-            sleepHours,
-            note,
-            menstrualFlowId,
-            vaginalFlowId,
-            cycleLogId,
-            username
-        ]);
-
-        if (result.affectedRows === 0) {
-            throw new Error("We couldn't find the cycle log to update");
+        // Actualizar el registro principal en cycleLog
+        const updateQueries = [];
+        if (note !== undefined) {
+            if (note === null) {
+                updateQueries.push('note = NULL');
+            } else {
+                updateQueries.push('note = ?');
+            }
+        }
+        if (menstrualFlowId !== undefined) {
+            if (menstrualFlowId === null) {
+                updateQueries.push('menstrualFlowId = NULL');
+            } else {
+                updateQueries.push('menstrualFlowId = ?');
+            }
+        }
+        if (vaginalFlowId !== undefined) {
+            if (vaginalFlowId === null) {
+                updateQueries.push('vaginalFlowId = NULL');
+            } else {
+                updateQueries.push('vaginalFlowId = ?');
+            }
         }
 
+        if (updateQueries.length > 0) {
+            const updateQuery = `UPDATE cycleLog SET ${updateQueries.join(', ')} WHERE cycleLogId = ?`;
+            const updateParams = [];
+            if (note !== undefined && note !== null) updateParams.push(note);
+            if (menstrualFlowId !== undefined && menstrualFlowId !== null) updateParams.push(menstrualFlowId);
+            if (vaginalFlowId !== undefined && vaginalFlowId !== null) updateParams.push(vaginalFlowId);
+            updateParams.push(cycleLogId);
+
+            await (await connection).execute(updateQuery, updateParams);
+        }
+
+        // Eliminar los registros anteriores de síntomas, estados de ánimo, medicamentos, píldoras y métodos anticonceptivos asociados
         await (await connection).execute('DELETE FROM symptomLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM moodLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM medicationLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM pillLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM birthControlLog WHERE cycleLogId = ?', [cycleLogId]);
         
-        for (const symptomId of symptoms) {
-            await (await connection).execute(
-                'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
-                [symptomId, cycleLogId]
-            );
-        }
-        
-        for (const moodId of moods) {
-            await (await connection).execute(
-                'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
-                [moodId, cycleLogId]
-            );
-        }
-        
-        for (const medicationId of medications) {
-            await (await connection).execute(
-                'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
-                [medicationId, cycleLogId]
-            );
-        }
-        
-        for (const pillId of pills) {
-            await (await connection).execute(
-                'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
-                [pillId, cycleLogId]
-            );
-        }
-        
-        if (birthControlId) {
-            await (await connection).execute(
-                'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
-                [birthControlId, cycleLogId]
-            );
+        // Insertar síntomas si no es null y tiene elementos
+        if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
+            for (const symptomId of symptoms) {
+                await (await connection).execute(
+                    'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
+                    [symptomId, cycleLogId]
+                );
+            }
         }
 
+        // Insertar moods si no es null y tiene elementos
+        if (moods !== null && Array.isArray(moods) && moods.length > 0) {
+            for (const moodId of moods) {
+                await (await connection).execute(
+                    'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
+                    [moodId, cycleLogId]
+                );
+            }
+        }
+
+        // Insertar medications si no es null y tiene elementos
+        if (medications !== null && Array.isArray(medications) && medications.length > 0) {
+            for (const medicationId of medications) {
+                await (await connection).execute(
+                    'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
+                    [medicationId, cycleLogId]
+                );
+            }
+        }
+
+        // Insertar pills si no es null y tiene elementos
+        if (pills !== null && Array.isArray(pills) && pills.length > 0) {
+            for (const pillId of pills) {
+                await (await connection).execute(
+                    'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
+                    [pillId, cycleLogId]
+                );
+            }
+        }
+
+        // Insertar birthControls si no es null y tiene elementos
+        if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
+            for (const birthControlId of birthControls) {
+                await (await connection).execute(
+                    'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
+                    [birthControlId, cycleLogId]
+                );
+            }
+        }
+        
+        // Commit de la transacción
         await (await connection).commit();
 
         return { success: true };
     } catch (error) {
+        // Rollback en caso de error
         await (await connection).rollback();
         console.error('Error al actualizar el ciclo:', error);
         throw error;
