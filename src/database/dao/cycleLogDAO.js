@@ -40,6 +40,54 @@ const createCycleLog = async (cycleLog) => {
             );
         }
 
+        
+
+        // Check if there are existing periods for the user
+        const [periodRows] = await (await connection).execute(
+            'SELECT * FROM period WHERE username = ? ORDER BY startDate DESC LIMIT 1',
+            [username]
+        );
+
+        if (periodRows.length === 0 && menstrualFlowId !== null) {
+            await (await connection).execute(
+                'INSERT INTO period (username, startDate, endDate) VALUES (?, ?, ?)',
+                [username, creationDate, creationDate]
+            );
+        } else if (periodRows.length > 0) {
+            const lastPeriod = periodRows[0];
+            const lastEndDate = new Date(lastPeriod.endDate);
+            const lastStartDate = new Date(lastPeriod.startDate);
+            const currentStartDate = new Date(creationDate);
+
+            const lastEndDateAdjusted = new Date(lastEndDate.getFullYear(), lastEndDate.getMonth(), lastEndDate.getDate(), 0, 0, 0, 0);
+            const lastStartDateAdjusted = new Date(lastStartDate.getFullYear(), lastStartDate.getMonth(), lastStartDate.getDate(), 0, 0, 0, 0);
+            const currentStartDateAdjusted = new Date(currentStartDate.getFullYear(), currentStartDate.getMonth(), currentStartDate.getDate(), 0, 0, 0, 0);
+
+            const oneDayInMilliseconds = 86400000;
+            const differenceWithEndDate = currentStartDateAdjusted.getTime() - lastEndDateAdjusted.getTime();
+            const differenceWithStartDate = currentStartDateAdjusted.getTime() - lastStartDateAdjusted.getTime();
+
+            if (differenceWithEndDate === oneDayInMilliseconds) {
+
+                await (await connection).execute(
+                    'UPDATE period SET endDate = ? WHERE periodId = ?',
+                    [creationDate, lastPeriod.periodId]
+                );
+            } else if (differenceWithStartDate === -oneDayInMilliseconds) {
+                // If the new period starts exactly one day before the last period starts
+                await (await connection).execute(
+                    'UPDATE period SET startDate = ? WHERE periodId = ?',
+                    [creationDate, lastPeriod.periodId]
+                );
+            } else {
+                // If the new period doesn't start exactly one day before or after the last period ends
+                await (await connection).execute(
+                    'INSERT INTO period (username, startDate, endDate) VALUES (?, ?, ?)',
+                    [username, creationDate, creationDate]
+                );
+            }
+        }
+
         if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
             for (const symptomId of symptoms) {
                 await (await connection).execute(
@@ -415,6 +463,30 @@ const getCycleLogByDate = async (username, month, year, day) => {
     }
 };
 
+const getLatestCycleLogByUser = async (username) => {
+    const query = `
+        SELECT *
+        FROM cycleLog
+        WHERE username = ?
+        ORDER BY creationDate DESC
+        LIMIT 1
+    `;
+
+    try {
+        const [rows] = await (await connection).execute(query, [username]);
+        
+        if (!rows || rows.length === 0) {
+            console.log('No cycle log found for user:', username);
+            return null;
+        }
+
+        return rows[0];
+    } catch (error) {
+        console.error('Error en getLatestCycleLogByUser:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     createCycleLog,
     deleteCycleLog,
@@ -425,5 +497,5 @@ module.exports = {
     getMedicationsByCycleLogId,
     getPillsByCycleLogId,
     getBirthControlByCycleLogId, 
-    getMenstrualFlow, getVaginalFlow, getCycleLogByDate
+    getMenstrualFlow, getVaginalFlow, getCycleLogByDate, getLatestCycleLogByUser
 };

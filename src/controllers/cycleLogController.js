@@ -10,8 +10,10 @@ const {
     getBirthControlByCycleLogId, 
     getMenstrualFlow, 
     getVaginalFlow, 
-    getCycleLogByDate
+    getCycleLogByDate, getLatestCycleLogByUser
 } = require('../database/dao/cycleLogDAO');
+
+const { getMenstrualCycleByUser } = require('../database/dao/menstrualCycleDAO');
 
 const HttpStatusCodes = require('../utils/enums');
 
@@ -207,9 +209,54 @@ const removeCycleLog = async (req, res) => {
     }
 };
 
+const getCyclePrediction = async (req, res) => {
+    const { username } = req;
+
+    try {
+        const latestCycleLog = await getLatestCycleLogByUser(username);
+
+        if (!latestCycleLog) {
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
+                error: true,
+                statusCode: HttpStatusCodes.NOT_FOUND,
+                message: 'No cycle logs found for the user'
+            });
+        }
+        const menstrualCycleInfo = await getMenstrualCycleByUser(username);
+
+        if (!menstrualCycleInfo) {
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
+                error: true,
+                statusCode: HttpStatusCodes.NOT_FOUND,
+                message: 'Menstrual cycle information not found for the user'
+            });
+        }
+
+        const { aproxPeriodDuration, aproxCycleDuration } = menstrualCycleInfo;
+        const lastPeriodDate = new Date(latestCycleLog.creationDate);
+
+        const nextPeriodStartDate = new Date(lastPeriodDate);
+        nextPeriodStartDate.setDate(nextPeriodStartDate.getDate() + aproxCycleDuration);
+        const nextPeriodEndDate = new Date(nextPeriodStartDate);
+        nextPeriodEndDate.setDate(nextPeriodEndDate.getDate() + aproxPeriodDuration);
+
+        res.status(HttpStatusCodes.OK).json({
+            nextPeriodStartDate,
+            nextPeriodEndDate
+        });
+    } catch (error) {
+        console.error('Error retrieving cycle prediction:', error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            message: 'Error retrieving cycle prediction. Try again later'
+        });
+    }
+};
+
 module.exports = {
     registerCycleLog,
     updateCycleLogEntry,
     getCycleLogs,
-    removeCycleLog, getCycleLogByDay
+    removeCycleLog, getCycleLogByDay, getCyclePrediction
 };
