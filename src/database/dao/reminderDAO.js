@@ -16,6 +16,16 @@ const createReminder = async (reminder) => {
     }
 }
 
+const updateReminderWithScheduleId = async (reminderId, scheduleId) => {
+    try {
+        const query = "UPDATE reminder SET scheduleId = ? WHERE reminderId = ?";
+        await (await connection).execute(query, [scheduleId, reminderId]);
+    } catch (error) {
+        console.error('Error al actualizar el recordatorio con el ID de programación: ', error);
+        throw error;
+    }
+};
+
 const updateReminder = async (reminderId, newReminderData) => {
     const {description, title, creationDate, username} = newReminderData;
 
@@ -55,6 +65,48 @@ const getReminderById = async (reminderId) => {
     }
 };
 
+const getCurrentRemindersByUser = async (username) => {
+    try {
+        const [rows] = await (await connection).execute(
+            'SELECT * FROM reminder WHERE username = ? AND creationDate >= MICROSECOND(NOW()) AND YEAR(creationDate) >= YEAR(NOW()) AND MONTH(creationDate) >= MONTH(NOW()) AND DAY(creationDate) >= DAY(NOW())',
+            [username]
+        );
+
+        return rows;
+    } catch (error) {
+        console.error('Error trying to get the reminders of the user: ', error);
+        throw error;
+    }
+};
+
+const deleteReminder = async (reminderId, username) => {
+    try {
+        const [rows] = await (await connection).execute(
+            'SELECT * FROM reminder WHERE reminderId = ? AND username = ?',
+            [reminderId, username]
+        );
+
+        if (rows.length === 0) {
+            return { success: false, message: 'No reminder found or permission denied' };
+        }
+
+        await (await connection).execute(
+            'DELETE FROM reminder WHERE reminderId = ?',
+            [reminderId]
+        );
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting reminder:', error);
+        throw error;
+    }
+};
+
 module.exports = {
-    createReminder, updateReminder, getReminderById,
+    createReminder,
+    updateReminder,
+    getReminderById,
+    getCurrentRemindersByUser, 
+    updateReminderWithScheduleId,
+    deleteReminder
 };

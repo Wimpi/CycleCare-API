@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recordatorio</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F5DBD8; /* WhitePink */
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: #4D4C4C; /* DarkGray */
+        }
+
+        #container {
+            background-color: #546477; /* GrayBlue */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            margin: 30px auto;
+            padding: 20px;
+            color: #FFFFFF; /* White */
+        }
+
+        h1 {
+            color: #F26E8B; /* MainPink */
+        }
+
+        p {
+            font-size: 18px;
+            color: #FFFFFF; /* White */
+        }
+
+        #title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #F26E8B; /* MainPink */
+        }
+
+        #description {
+            font-size: 20px;
+            color: #DF94A1; /* SoftPink94 */
+        }
+
+        #datetime {
+            font-size: 18px;
+            color: #DF94A1; /* SoftPink94 */
+        }
+
+        #support {
+            color: #F26E8B; /* MainPink */
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>¡Hola, usuaria de CycleCare!</h1>
+
+        <p>Te recordamos que tienes un evento importante próximo:</p>
+
+        <p id="title">{%title%}</p>
+        <p id="description">{%description%}</p>
+        <p id="datetime"><strong>Fecha y Hora:</strong> {%creationDate%}</p>
+
+        <p>Si tienes alguna pregunta, no dudes en contactar a nuestro equipo de soporte en <span id="support">support@cyclecare.com</span></p>
+
+        <p>Gracias por confiar en CycleCare donde siempre cuidaremos de ti.</p>
+
+        <p>Atentamente,<br>El equipo de CycleCare</p>
+    </div>
+</body>
+</html>

@@ -102,7 +102,19 @@ const updateUserPassword = async (email, newPassword) => {
     }
 };
 
+const findUserByUsername = async (username) => {
+    const query = "SELECT u.email, u.role, p.name, p.firstLastname, p.secondLastName " +
+    "FROM user u JOIN person p ON u.email = p.email WHERE u.username = ?";
+    
+    try {
+        const [rows] = await (await connection).execute(query, [username]);
+        return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+        console.error("Error finding user by username:", error);
+        throw error;
+    }
+};
 module.exports = { 
     login, 
-    postUser, findUserByEmail, updateUserPassword 
+    postUser, findUserByEmail, updateUserPassword, findUserByUsername 
 };
