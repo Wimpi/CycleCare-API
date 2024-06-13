@@ -17,6 +17,13 @@ const router = Router();
  *   get:
  *     summary: Obtener información de horas de sueño
  *     tags: [Charts]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     responses:
  *       200:
  *         description: Información de horas de sueño obtenida exitosamente

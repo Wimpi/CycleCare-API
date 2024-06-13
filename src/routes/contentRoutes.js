@@ -33,6 +33,12 @@ const router = Router();
  *           type: string
  *         required: true
  *         description: ID del contenido a calificar
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     requestBody:
  *       required: true
  *       content:
@@ -59,6 +65,13 @@ router.post('/create-rating/:contentId', [validateJWT], contentRate);
  *   get:
  *     summary: Obtener contenido informativo
  *     tags: [Content]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     responses:
  *       200:
  *         description: Contenido informativo obtenido exitosamente
@@ -81,6 +94,13 @@ router.get('/obtain-informative-content', [validateJWT], getInformativeContent);
  *   post:
  *     summary: Publicar un nuevo artículo
  *     tags: [Content]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     requestBody:
  *       required: true
  *       content:
@@ -101,6 +121,13 @@ router.post('/publish-article', [validateJWT], publishContent);
  *   get:
  *     summary: Obtener artículos publicados por médico
  *     tags: [Content]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     responses:
  *       200:
  *         description: Artículos obtenidos exitosamente
@@ -124,6 +151,12 @@ router.get('/get-articles-by-medic', [validateJWT], getArticleByMedic);
  *           type: string
  *         required: true
  *         description: ID del contenido
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     responses:
  *       200:
  *         description: Artículo obtenido exitosamente
@@ -144,6 +177,13 @@ router.get('/get-article-by-id/:contentId', [validateJWT], getArticleById);
  *   post:
  *     summary: Actualizar contenido informativo
  *     tags: [Content]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     requestBody:
  *       required: true
  *       content:
@@ -171,6 +211,12 @@ router.post('/update-informative-content', [validateJWT], updateInformativeConte
  *           type: string
  *         required: true
  *         description: ID del contenido
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     responses:
  *       200:
  *         description: Promedio obtenido exitosamente

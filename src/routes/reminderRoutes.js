@@ -22,6 +22,13 @@ const router = Router();
  *   post:
  *     summary: Registrar un nuevo recordatorio
  *     tags: [Reminders]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     requestBody:
  *       required: true
  *       content:
@@ -49,6 +56,12 @@ router.post('/create-reminder', [validateJWT], registerReminder);
  *           type: string
  *         required: true
  *         description: ID del recordatorio a actualizar
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     requestBody:
  *       required: true
  *       content:
@@ -73,6 +86,13 @@ router.post('/update-reminder/:reminderId', [validateJWT], reminderUpdate);
  *   get:
  *     summary: Obtener recordatorios del usuario actual
  *     tags: [Reminders]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     responses:
  *       200:
  *         description: Lista de recordatorios del usuario actual
@@ -98,6 +118,12 @@ router.get('/user-reminders', validateJWT, getCurrentUserReminders);
  *           type: string
  *         required: true
  *         description: ID del recordatorio a eliminar
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token de autenticación
  *     responses:
  *       200:
  *         description: Recordatorio eliminado correctamente
