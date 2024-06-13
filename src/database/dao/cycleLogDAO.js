@@ -5,16 +5,14 @@ const createCycleLog = async (cycleLog) => {
     console.log(cycleLog);
     try {
         await (await connection).beginTransaction();
-
-        // Insertar el registro principal en cycleLog (solo username)
+        
         const [result] = await (await connection).execute(
             'INSERT INTO cycleLog (username, creationDate) VALUES (?, ?)',
             [username, creationDate]
         );
 
         const cycleLogId = result.insertId;
-
-        // Insertar note si no es null
+        
         if (note !== null) {
             await (await connection).execute(
                 'UPDATE cycleLog SET note = ? WHERE cycleLogId = ?',
@@ -22,7 +20,6 @@ const createCycleLog = async (cycleLog) => {
             );
         }
 
-        // Insertar menstrualFlowId si no es null
         if (menstrualFlowId !== null) {
             await (await connection).execute(
                 'UPDATE cycleLog SET menstrualFlowId = ? WHERE cycleLogId = ?',
@@ -30,7 +27,6 @@ const createCycleLog = async (cycleLog) => {
             );
         }
 
-        // Insertar vaginalFlowId si no es null
         if (vaginalFlowId !== null) {
             await (await connection).execute(
                 'UPDATE cycleLog SET vaginalFlowId = ? WHERE cycleLogId = ?',
@@ -38,7 +34,6 @@ const createCycleLog = async (cycleLog) => {
             );
         }
 
-        // Insertar síntomas si no es null y tiene elementos
         if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
             for (const symptomId of symptoms) {
                 await (await connection).execute(
@@ -48,7 +43,6 @@ const createCycleLog = async (cycleLog) => {
             }
         }
 
-        // Insertar moods si no es null y tiene elementos
         if (moods !== null && Array.isArray(moods) && moods.length > 0) {
             for (const moodId of moods) {
                 await (await connection).execute(
@@ -58,7 +52,6 @@ const createCycleLog = async (cycleLog) => {
             }
         }
 
-        // Insertar medications si no es null y tiene elementos
         if (medications !== null && Array.isArray(medications) && medications.length > 0) {
             for (const medicationId of medications) {
                 await (await connection).execute(
@@ -68,7 +61,6 @@ const createCycleLog = async (cycleLog) => {
             }
         }
 
-        // Insertar pills si no es null y tiene elementos
         if (pills !== null && Array.isArray(pills) && pills.length > 0) {
             for (const pillId of pills) {
                 await (await connection).execute(
@@ -78,7 +70,6 @@ const createCycleLog = async (cycleLog) => {
             }
         }
 
-        // Insertar birthControls si no es null y tiene elementos
         if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
             for (const birthControlId of birthControls) {
                 await (await connection).execute(
@@ -88,12 +79,10 @@ const createCycleLog = async (cycleLog) => {
             }
         }
 
-        // Commit de la transacción
         await (await connection).commit();
 
         return { success: true, cycleLogId };
     } catch (error) {
-        // Rollback en caso de error
         await (await connection).rollback();
         console.error('Error al crear el ciclo:', error);
         throw error;
@@ -135,7 +124,6 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
     try {
         await (await connection).beginTransaction();
 
-        // Actualizar el registro principal en cycleLog
         const updateQueries = [];
         if (note !== undefined) {
             if (note === null) {
@@ -170,14 +158,12 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
             await (await connection).execute(updateQuery, updateParams);
         }
 
-        // Eliminar los registros anteriores de síntomas, estados de ánimo, medicamentos, píldoras y métodos anticonceptivos asociados
         await (await connection).execute('DELETE FROM symptomLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM moodLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM medicationLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM pillLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM birthControlLog WHERE cycleLogId = ?', [cycleLogId]);
         
-        // Insertar síntomas si no es null y tiene elementos
         if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
             for (const symptomId of symptoms) {
                 await (await connection).execute(
@@ -187,7 +173,6 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
             }
         }
 
-        // Insertar moods si no es null y tiene elementos
         if (moods !== null && Array.isArray(moods) && moods.length > 0) {
             for (const moodId of moods) {
                 await (await connection).execute(
@@ -197,7 +182,6 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
             }
         }
 
-        // Insertar medications si no es null y tiene elementos
         if (medications !== null && Array.isArray(medications) && medications.length > 0) {
             for (const medicationId of medications) {
                 await (await connection).execute(
@@ -207,7 +191,6 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
             }
         }
 
-        // Insertar pills si no es null y tiene elementos
         if (pills !== null && Array.isArray(pills) && pills.length > 0) {
             for (const pillId of pills) {
                 await (await connection).execute(
@@ -217,7 +200,6 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
             }
         }
 
-        // Insertar birthControls si no es null y tiene elementos
         if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
             for (const birthControlId of birthControls) {
                 await (await connection).execute(
@@ -226,13 +208,10 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
                 );
             }
         }
-        
-        // Commit de la transacción
         await (await connection).commit();
 
         return { success: true };
     } catch (error) {
-        // Rollback en caso de error
         await (await connection).rollback();
         console.error('Error al actualizar el ciclo:', error);
         throw error;
@@ -258,7 +237,7 @@ const getSymptomsByCycleLogId = async (cycleLogId) => {
         const query = `
             SELECT s.symptomId, s.name
             FROM symptomLog sl
-            JOIN symptoms s ON sl.symptomId = s.symptomId
+            JOIN symptom s ON sl.symptomId = s.symptomId
             WHERE sl.cycleLogId = ?
         `;
         const [rows] = await (await connection).execute(query, [cycleLogId]);
@@ -274,7 +253,7 @@ const getMoodsByCycleLogId = async (cycleLogId) => {
         const query = `
             SELECT m.moodId, m.name
             FROM moodLog ml
-            JOIN moods m ON ml.moodId = m.moodId
+            JOIN mood m ON ml.moodId = m.moodId
             WHERE ml.cycleLogId = ?
         `;
         const [rows] = await (await connection).execute(query, [cycleLogId]);
@@ -290,7 +269,7 @@ const getMedicationsByCycleLogId = async (cycleLogId) => {
         const query = `
             SELECT m.medicationId, m.name
             FROM medicationLog ml
-            JOIN medications m ON ml.medicationId = m.medicationId
+            JOIN medication m ON ml.medicationId = m.medicationId
             WHERE ml.cycleLogId = ?
         `;
         const [rows] = await (await connection).execute(query, [cycleLogId]);
@@ -306,7 +285,7 @@ const getPillsByCycleLogId = async (cycleLogId) => {
         const query = `
             SELECT p.pillId, p.status
             FROM pillLog pl
-            JOIN pills p ON pl.pillId = p.pillId
+            JOIN pill p ON pl.pillId = p.pillId
             WHERE pl.cycleLogId = ?
         `;
         const [rows] = await (await connection).execute(query, [cycleLogId]);
@@ -322,7 +301,7 @@ const getBirthControlByCycleLogId = async (cycleLogId) => {
         const query = `
             SELECT bc.birthControlId, bc.name, bc.status
             FROM birthControlLog bcl
-            JOIN birthControls bc ON bcl.birthControlId = bc.birthControlId
+            JOIN birthControl bc ON bcl.birthControlId = bc.birthControlId
             WHERE bcl.cycleLogId = ?
         `;
         const [rows] = await (await connection).execute(query, [cycleLogId]);
@@ -333,26 +312,93 @@ const getBirthControlByCycleLogId = async (cycleLogId) => {
     }
 };
 
-const getMenstrualFlow = async (menstrualFlowId) =>{
-    try{
-        const query = "SELECT * FROM mensturalFlow WHERE menstrualFlowId = ?";
-        const [rows] = await (await connection).execute(query,[menstrualFlowId]);
+const getMenstrualFlow = async (menstrualFlowId) => {
+    if (menstrualFlowId === null) {
+        return null;
+    }
+
+    try {
+        const query = "SELECT * FROM menstrualFlow WHERE menstrualFlowId = ?";
+        const [rows] = await (await connection).execute(query, [menstrualFlowId]);
         return rows;
-    }  catch (error) {
+    } catch (error) {
         console.error('Error al obtener el flujo menstrual:', error);
         throw error;
     }
-}
+};
 
-const getVaginalFlow = async(vaginalFlowId) =>{
+const getVaginalFlow = async (vaginalFlowId) => {
+    if (vaginalFlowId === null) {
+        return null;
+    }
+
     try {
-        const query = "SELECT * FROM vaginalFlow WHERE vaginalFlow = ?"
+        const query = "SELECT * FROM vaginalFlow WHERE vaginalFlowId = ?";
         const [rows] = await (await connection).execute(query, [vaginalFlowId]);
         return rows;
     } catch (error) {
-        
+        console.error('Error al obtener el flujo vaginal:', error);
+        throw error;
     }
-}
+};
+
+const getCycleLogByDate = async (username, month, year, day) => {
+    try {
+        const [cycleLogRows] = await (await connection).execute(
+            'SELECT * FROM cycleLog WHERE username = ? AND MONTH(creationDate) = ? AND YEAR(creationDate) = ? AND DAY(creationDate) = ?',
+            [username, month, year, day]
+        );
+
+        if (cycleLogRows.length === 0) {
+            return null;
+        }
+
+        const cycleLog = cycleLogRows[0];
+        const cycleLogId = cycleLog.cycleLogId;
+
+        const [symptomsRows] = await (await connection).execute(
+            'SELECT symptomId FROM symptomLog WHERE cycleLogId = ?',
+            [cycleLogId]
+        );
+        const symptoms = symptomsRows.map(row => row.symptomId);
+
+        const [moodsRows] = await (await connection).execute(
+            'SELECT moodId FROM moodLog WHERE cycleLogId = ?',
+            [cycleLogId]
+        );
+        const moods = moodsRows.map(row => row.moodId);
+
+        const [medicationsRows] = await (await connection).execute(
+            'SELECT medicationId FROM medicationLog WHERE cycleLogId = ?',
+            [cycleLogId]
+        );
+        const medications = medicationsRows.map(row => row.medicationId);
+
+        const [pillsRows] = await (await connection).execute(
+            'SELECT pillId FROM pillLog WHERE cycleLogId = ?',
+            [cycleLogId]
+        );
+        const pills = pillsRows.map(row => row.pillId);
+
+        const [birthControlsRows] = await (await connection).execute(
+            'SELECT birthControlId FROM birthControlLog WHERE cycleLogId = ?',
+            [cycleLogId]
+        );
+        const birthControls = birthControlsRows.map(row => row.birthControlId);
+
+        return {
+            ...cycleLog,
+            symptoms,
+            moods,
+            medications,
+            pills,
+            birthControls
+        };
+    } catch (error) {
+        console.error('Error al recuperar el ciclo:', error);
+        throw error;
+    }
+};
 
 module.exports = {
     createCycleLog,
@@ -364,5 +410,5 @@ module.exports = {
     getMedicationsByCycleLogId,
     getPillsByCycleLogId,
     getBirthControlByCycleLogId, 
-    getMenstrualFlow, getVaginalFlow
+    getMenstrualFlow, getVaginalFlow, getCycleLogByDate
 };

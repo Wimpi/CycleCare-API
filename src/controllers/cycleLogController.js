@@ -1,10 +1,16 @@
 const {
     createCycleLog, 
-    deleteCycleLog, 
-    updateCycleLog, 
+    deleteCycleLog,
+    updateCycleLog,
     getCycleLogsByMonthAndUser,
-    getMenstrualFlow,
-    getVaginalFlow
+    getSymptomsByCycleLogId,
+    getMoodsByCycleLogId,
+    getMedicationsByCycleLogId,
+    getPillsByCycleLogId,
+    getBirthControlByCycleLogId, 
+    getMenstrualFlow, 
+    getVaginalFlow, 
+    getCycleLogByDate
 } = require('../database/dao/cycleLogDAO');
 
 const HttpStatusCodes = require('../utils/enums');
@@ -71,6 +77,32 @@ const updateCycleLogEntry = async (req, res) => {
     }
 };
 
+const getCycleLogByDay = async (req, res) => {
+    const { year, month, day } = req.params;
+    const { username } = req;
+
+    try {
+        const cycleLog = await getCycleLogByDate(username, month, year, day);
+
+        if (cycleLog) {
+            res.status(HttpStatusCodes.OK).json(cycleLog);
+        } else {
+            res.status(HttpStatusCodes.NOT_FOUND).json({
+                error: true,
+                statusCode: HttpStatusCodes.NOT_FOUND,
+                message: 'Cycle log not found'
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            message: 'Error retrieving cycle log. Try again later'
+        });
+    }
+};
+
 const getCycleLogs = async (req, res) => {
     const { username } = req;
     const { month, year } = req.params;
@@ -98,41 +130,53 @@ const getCycleLogs = async (req, res) => {
 };
 
 const getDetailedCycleLogs = async (month, year, username) => {
-    const cycleLogs = await getCycleLogsByMonthAndUser(month, year, username);
+    try {
+        const cycleLogs = await getCycleLogsByMonthAndUser(month, year, username);
 
-    if (!cycleLogs || cycleLogs.length === 0) {
-        return [];
+        if (!cycleLogs || cycleLogs.length === 0) {
+            return [];
+        }
+
+        const detailedCycleLogs = await Promise.all(cycleLogs.map(async (log) => {
+            try {
+                const symptoms = await getSymptomsByCycleLogId(log.cycleLogId);
+                const moods = await getMoodsByCycleLogId(log.cycleLogId);
+                const medications = await getMedicationsByCycleLogId(log.cycleLogId);
+                const pills = await getPillsByCycleLogId(log.cycleLogId);
+                const birthControl = await getBirthControlByCycleLogId(log.cycleLogId);
+                const cycleLogId = log.cycleLogId;
+                const sleepHours = log.sleepHours;
+                const username = log.username;
+                const creationDate = log.creationDate;
+                const note = log.note;
+                const menstrualFlow = await getMenstrualFlow(log.menstrualFlowId);
+                const vaginalFlow = await getVaginalFlow(log.vaginalFlowId);
+
+                return {
+                    cycleLogId,
+                    creationDate,
+                    menstrualFlow,
+                    vaginalFlow,
+                    sleepHours,
+                    username,
+                    note,
+                    symptoms,
+                    moods,
+                    medications,
+                    pills,
+                    birthControl
+                };
+            } catch (innerError) {
+                console.error('Error al obtener detalles de un ciclo:', innerError);
+                throw error;
+            }
+        }));
+
+        return detailedCycleLogs.filter(log => log !== null);
+    } catch (error) {
+        console.error('Error al obtener los ciclos detallados:', error);
+        throw error;
     }
-
-    const detailedCycleLogs = await Promise.all(cycleLogs.map(async (log) => {
-        const symptoms = await getSymptomsByCycleLogId(log.cycleLogId);
-        const moods = await getMoodsByCycleLogId(log.cycleLogId);
-        const medications = await getMedicationsByCycleLogId(log.cycleLogId);
-        const pills = await getPillsByCycleLogId(log.cycleLogId);
-        const birthControl = await getBirthControlByCycleLogId(log.cycleLogId);
-        const cycleLogId = log.cycleLogId;
-        const sleepHours = log.sleepHours;
-        const username = log.username;
-        const note = log.note;
-        const mensturalFlow = getMenstrualFlow(log.menstrualFlowId);
-        const vaginalFlow = getVaginalFlow(log.vaginalFlowId);
-
-        return {
-            cycleLogId,
-            mensturalFlow,
-            vaginalFlow,
-            sleepHours,
-            username,
-            note,
-            symptoms,
-            moods,
-            medications,
-            pills,
-            birthControl
-        };
-    }));
-
-    return detailedCycleLogs;
 };
 
 const removeCycleLog = async (req, res) => {
@@ -167,5 +211,5 @@ module.exports = {
     registerCycleLog,
     updateCycleLogEntry,
     getCycleLogs,
-    removeCycleLog
+    removeCycleLog, getCycleLogByDay
 };
