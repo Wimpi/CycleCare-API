@@ -3,7 +3,6 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const path = require('path');
 
-// Cargar los esquemas YAML
 const schemas = YAML.load(path.join(__dirname, './schemas.yaml'));
 
 const options = {
@@ -17,7 +16,7 @@ const options = {
         servers: [
             {
                 url: 'http://localhost:' + process.env.APP_PORT,
-                description: 'Entorno local de desarrollo',
+                description: 'Local host environment',
             },
         ],
         components: schemas,
