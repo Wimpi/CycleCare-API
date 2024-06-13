@@ -15,7 +15,7 @@ const options = {
         },
         servers: [
             {
-                url: 'http://localhost:' + process.env.APP_PORT,
+                url: 'http://localhost:' + process.env.APP_PORT + '/apicyclecare',
                 description: 'Local host environment',
             },
         ],

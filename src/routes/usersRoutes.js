@@ -17,7 +17,7 @@ const {
 
 /**
  * @swagger
- * /login:
+ * /users/login:
  *   post:
  *     summary: Iniciar sesión de usuario
  *     tags: [Users]
@@ -46,7 +46,7 @@ router.post('/login', userLogin);
 
 /**
  * @swagger
- * /registerUser:
+ * /users/registerUser:
  *   post:
  *     summary: Registrar un nuevo usuario
  *     tags: [Users]
@@ -68,7 +68,7 @@ router.post('/registerUser', registerNewUser);
 
 /**
  * @swagger
- * /request-reset/{email}:
+ * /users/request-reset/{email}:
  *   post:
  *     summary: Solicitar restablecimiento de contraseña
  *     tags: [Users]
@@ -91,7 +91,7 @@ router.post('/request-reset/:email', requestReset);
 
 /**
  * @swagger
- * /reset-password/{email}:
+ * /users/reset-password/{email}:
  *   post:
  *     summary: Restablecer la contraseña
  *     tags: [Users]
