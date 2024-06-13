@@ -92,7 +92,7 @@ const contentRate = async (req, res) => {
     }
 };
 
-const getInformativeContent = async(req, res) => {
+const getInformativeContent = async(res) => {
     try {
         const informativeContent = await getContent();
         if(!informativeContent || informativeContent.length === 0){
