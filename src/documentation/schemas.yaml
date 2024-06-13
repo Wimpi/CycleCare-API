@@ -43,3 +43,36 @@ schemas:
         aproxPeriodDuration:
           type: integer
           description: Duración aproximada del período menstrual
+    Reminder:
+      type: object
+      required:
+        - description
+        - title
+        - creationDate
+      properties:
+        description:
+          type: string
+          description: Descripción del recordatorio
+        title:
+          type: string
+          description: Título del recordatorio
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del recordatorio
+    UpdateReminder:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Descripción del recordatorio
+        title:
+          type: string
+          description: Título del recordatorio
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del recordatorio
+        scheduleId:
+          type: string
+          description: ID del horario del recordatorio
