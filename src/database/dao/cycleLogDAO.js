@@ -1,8 +1,7 @@
 const connection = require("../connection");
 
 const createCycleLog = async (cycleLog) => {
-    const { username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = cycleLog;
-    console.log(cycleLog);
+    const { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = cycleLog;
     try {
         await (await connection).beginTransaction();
         
@@ -12,6 +11,13 @@ const createCycleLog = async (cycleLog) => {
         );
 
         const cycleLogId = result.insertId;
+
+        if(sleepHours !== null){
+            await (await connection).execute(
+                'UPDATE cycleLog SET sleepHours = ? WHERE cycleLogId = ?',
+                [sleepHours, cycleLogId]
+            );
+        }
         
         if (note !== null) {
             await (await connection).execute(
@@ -119,17 +125,28 @@ const deleteCycleLog = async (cycleLogId, username) => {
 };
 
 const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
-    const { note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = updatedCycleLog;
+    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = updatedCycleLog;
 
     try {
         await (await connection).beginTransaction();
 
         const updateQueries = [];
+        const updateParams = [];
+
+        if (sleepHours !== undefined) {
+            if (sleepHours === null) {
+                updateQueries.push('sleepHours = NULL');
+            } else {
+                updateQueries.push('sleepHours = ?');
+                updateParams.push(sleepHours);
+            }
+        }
         if (note !== undefined) {
             if (note === null) {
                 updateQueries.push('note = NULL');
             } else {
                 updateQueries.push('note = ?');
+                updateParams.push(note);
             }
         }
         if (menstrualFlowId !== undefined) {
@@ -137,6 +154,7 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
                 updateQueries.push('menstrualFlowId = NULL');
             } else {
                 updateQueries.push('menstrualFlowId = ?');
+                updateParams.push(menstrualFlowId);
             }
         }
         if (vaginalFlowId !== undefined) {
@@ -144,17 +162,13 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
                 updateQueries.push('vaginalFlowId = NULL');
             } else {
                 updateQueries.push('vaginalFlowId = ?');
+                updateParams.push(vaginalFlowId);
             }
         }
 
         if (updateQueries.length > 0) {
             const updateQuery = `UPDATE cycleLog SET ${updateQueries.join(', ')} WHERE cycleLogId = ?`;
-            const updateParams = [];
-            if (note !== undefined && note !== null) updateParams.push(note);
-            if (menstrualFlowId !== undefined && menstrualFlowId !== null) updateParams.push(menstrualFlowId);
-            if (vaginalFlowId !== undefined && vaginalFlowId !== null) updateParams.push(vaginalFlowId);
             updateParams.push(cycleLogId);
-
             await (await connection).execute(updateQuery, updateParams);
         }
 
@@ -163,7 +177,7 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
         await (await connection).execute('DELETE FROM medicationLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM pillLog WHERE cycleLogId = ?', [cycleLogId]);
         await (await connection).execute('DELETE FROM birthControlLog WHERE cycleLogId = ?', [cycleLogId]);
-        
+
         if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
             for (const symptomId of symptoms) {
                 await (await connection).execute(
@@ -208,6 +222,7 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
                 );
             }
         }
+
         await (await connection).commit();
 
         return { success: true };
