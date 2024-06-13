@@ -62,6 +62,11 @@ schemas:
           description: Fecha de creación del recordatorio
     UpdateReminder:
       type: object
+      required:
+        - description
+        - title
+        - creationDate
+        - scheduleId
       properties:
         description:
           type: string
@@ -75,9 +80,16 @@ schemas:
           description: Fecha de creación del recordatorio
         scheduleId:
           type: string
-          description: ID del horario del recordatorio
+          description: ID del email programado del recordatorio
     InformativeContent:
       type: object
+      required:
+        - id
+        - title
+        - description
+        - creationDate
+        - filename
+        - username
       properties:
         id:
           type: string
@@ -100,6 +112,13 @@ schemas:
           description: Nombre de usuario del creador del contenido informativo
     Article:
       type: object
+      required:
+        - id
+        - title
+        - description
+        - creationDate
+        - filename
+        - username
       properties:
         id:
           type: string
@@ -164,4 +183,54 @@ schemas:
           description: Nombre del archivo de imagen anterior
         newImage:
           type: string
-          description: Nueva imagen en formato base64
+          description: Nueva imagen en formato base64 del artículo a actualizar
+    CycleLog:
+      type: object
+      required:
+        - creationDate
+      properties:
+        sleepHours:
+          type: number
+          description: Horas de sueño del seguimiento diario
+        creationDate:
+          type: string
+          format: date
+          description: Fecha de creación del seguimiento diario
+        note:
+          type: string
+          description: Nota del seguimiento diario
+        menstrualFlowId:
+          type: integer
+          description: ID del flujo menstrual del seguimiento diario
+        vaginalFlowId:
+          type: integer
+          description: ID del flujo vaginal del seguimiento diario
+        symptoms:
+          type: array
+          description: Síntomas del seguimiento diario
+          items:
+            type: integer
+        sexualActivities:
+          type: array
+          description: Actividades sexuales del seguimiento diario
+          items:
+            type: integer
+        moods:
+          description: Estados de ánimo del seguimiento diario
+          type: array
+          items:
+            type: integer
+        medications:
+          type: array
+          description: Medicamentos del seguimiento diario
+          items:
+            type: integer
+        birthControls:
+          type: array
+          description: Métodos anticonceptivos del seguimiento diario
+          items:
+            type: integer
+    SleepHours:
+      type: integer
+      description: Horas de sueño del seguimiento diario
+      
