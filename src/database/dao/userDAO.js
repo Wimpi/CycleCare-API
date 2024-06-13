@@ -103,7 +103,9 @@ const updateUserPassword = async (email, newPassword) => {
 };
 
 const findUserByUsername = async (username) => {
-    const query = 'SELECT * FROM user WHERE username = ?';
+    const query = "SELECT u.email, u.role, p.name, p.firstLastname, p.secondLastName " +
+    "FROM user u JOIN person p ON u.email = p.email WHERE u.username = ?";
+    
     try {
         const [rows] = await (await connection).execute(query, [username]);
         return rows.length > 0 ? rows[0] : null;

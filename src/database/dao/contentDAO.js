@@ -3,8 +3,7 @@ const connection = require("../connection");
 
 const registerArticle = async(article) =>{
     try {
-        const query = "INSERT INTO content (title, description, creationDate, media, username) VALUES (?, ?, ?, ?, ?)"
-
+        const query = "INSERT INTO content (title, description, creationDate, media, username) VALUES (?, ?, ?, ?, ?)";
         await(await connection).execute(
             query, 
             [article.title, article.description, article.creationDate, article.filename, article.username]
@@ -65,11 +64,77 @@ const getContent = async() => {
     }
 };
 
+const getArticlesByUsername = async(username) => {
+    try{
+        const query = 'SELECT * FROM content WHERE username = ?'
+
+        const [rows] = await(await connection).execute(
+            query, 
+            [username]
+        );
+
+        return rows;
+    } catch (error) {
+        console.error('Error trying to get articles from the database');
+        throw error;
+    }
+};
+
+const getContentById = async(contentId) => {
+    try{
+        const query = 'SELECT * FROM content WHERE contentId =  ?'
+        const [rows] = await(await connection).execute(
+            query, 
+            [contentId]
+        );
+        return rows
+    } catch (error) {
+        console.error('Error trying to get article from database');
+        throw error;
+    }
+};
+
+const updateArticle = async(article) => {
+    try{
+        const query = "UPDATE content SET title = ?, description = ?, media = ? WHERE contentId = ?";
+        const [result] = await (await connection).execute(
+          query, 
+          [article.title, article.description, article.filename, article.contentId]
+        );
+
+        if(result.affectedRows>0){
+            return {success: true};
+        } else {
+            return {success:false};
+        }
+
+    } catch (error) {
+        console.error('Error trying to update informative content from DAO: ', error);
+        throw error;
+    }
+}
+
+const getAvarage = async(contentId) => {
+    try{
+        const query = "SELECT AVG(r.value) AS contentAVG FROM contentRating cr JOIN rate r ON cr.rateId = r.rateId WHERE cr.contentId = ?"
+        const [rows] = await(await connection).execute(
+            query, 
+            [contentId]
+        );
+        return rows;
+    } catch(error) {
+        console.error('Error trying to get AVG: ', error);
+        throw error;
+    }
+}
+
 //Método para recuperar contenido por id
-//Método para recuperar contenido de un usuario en específico para los 100tificos 
 
 module.exports = {
     rateContent, 
     getContent, 
-    registerArticle
-};
+    registerArticle, 
+    getArticlesByUsername, 
+    getContentById, 
+    updateArticle, 
+    getAvarage};

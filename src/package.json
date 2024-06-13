@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -19,8 +20,9 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.13",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0",
-    "tzdata": "^1.0.40"
+    "swagger-ui-express": "^5.0.1",
+    "tzdata": "^1.0.40",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7"

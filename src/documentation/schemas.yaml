@@ -1,0 +1,236 @@
+schemas:
+    NewUser:
+      type: object
+      required:
+        - email
+        - name
+        - firstLastName
+        - secondLastName
+        - username
+        - password
+        - role
+        - isRegular
+        - aproxCycleDuration
+        - aproxPeriodDuration
+      properties:
+        email:
+          type: string
+          description: Correo electrónico del usuario
+        name:
+          type: string
+          description: Nombre del usuario
+        firstLastName:
+          type: string
+          description: Primer apellido del usuario
+        secondLastName:
+          type: string
+          description: Segundo apellido del usuario
+        username:
+          type: string
+          description: Nombre de usuario
+        password:
+          type: string
+          description: Contraseña del usuario
+        role:
+          type: string
+          description: Rol del usuario
+        isRegular:
+          type: boolean
+          description: Indica si el ciclo menstrual es regular
+        aproxCycleDuration:
+          type: integer
+          description: Duración aproximada del ciclo menstrual
+        aproxPeriodDuration:
+          type: integer
+          description: Duración aproximada del período menstrual
+    Reminder:
+      type: object
+      required:
+        - description
+        - title
+        - creationDate
+      properties:
+        description:
+          type: string
+          description: Descripción del recordatorio
+        title:
+          type: string
+          description: Título del recordatorio
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del recordatorio
+    UpdateReminder:
+      type: object
+      required:
+        - description
+        - title
+        - creationDate
+        - scheduleId
+      properties:
+        description:
+          type: string
+          description: Descripción del recordatorio
+        title:
+          type: string
+          description: Título del recordatorio
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del recordatorio
+        scheduleId:
+          type: string
+          description: ID del email programado del recordatorio
+    InformativeContent:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - creationDate
+        - filename
+        - username
+      properties:
+        id:
+          type: string
+          description: ID único del contenido informativo
+        title:
+          type: string
+          description: Título del contenido informativo
+        description:
+          type: string
+          description: Descripción del contenido informativo
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del contenido informativo
+        filename:
+          type: string
+          description: Nombre del archivo de imagen asociado con el contenido informativo
+        username:
+          type: string
+          description: Nombre de usuario del creador del contenido informativo
+    Article:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - creationDate
+        - filename
+        - username
+      properties:
+        id:
+          type: string
+          description: ID único del artículo
+        title:
+          type: string
+          description: Título del artículo
+        description:
+          type: string
+          description: Descripción del artículo
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del artículo
+        filename:
+          type: string
+          description: Nombre del archivo de imagen asociado con el artículo
+        username:
+          type: string
+          description: Nombre de usuario del autor del artículo
+    NewArticle:
+      type: object
+      required:
+        - title
+        - description
+        - creationDate
+        - image
+      properties:
+        title:
+          type: string
+          description: Título del nuevo artículo
+        description:
+          type: string
+          description: Descripción del nuevo artículo
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del nuevo artículo
+        image:
+          type: string
+          description: Imagen en formato base64 del nuevo artículo
+    UpdateArticle:
+      type: object
+      required:
+        - contentId
+        - title
+        - description
+        - imageName
+        - newImage
+      properties:
+        contentId:
+          type: string
+          description: ID del contenido a actualizar
+        title:
+          type: string
+          description: Título del artículo a actualizar
+        description:
+          type: string
+          description: Descripción del artículo a actualizar
+        imageName:
+          type: string
+          description: Nombre del archivo de imagen anterior
+        newImage:
+          type: string
+          description: Nueva imagen en formato base64 del artículo a actualizar
+    CycleLog:
+      type: object
+      required:
+        - creationDate
+      properties:
+        sleepHours:
+          type: number
+          description: Horas de sueño del seguimiento diario
+        creationDate:
+          type: string
+          format: date
+          description: Fecha de creación del seguimiento diario
+        note:
+          type: string
+          description: Nota del seguimiento diario
+        menstrualFlowId:
+          type: integer
+          description: ID del flujo menstrual del seguimiento diario
+        vaginalFlowId:
+          type: integer
+          description: ID del flujo vaginal del seguimiento diario
+        symptoms:
+          type: array
+          description: Síntomas del seguimiento diario
+          items:
+            type: integer
+        sexualActivities:
+          type: array
+          description: Actividades sexuales del seguimiento diario
+          items:
+            type: integer
+        moods:
+          description: Estados de ánimo del seguimiento diario
+          type: array
+          items:
+            type: integer
+        medications:
+          type: array
+          description: Medicamentos del seguimiento diario
+          items:
+            type: integer
+        birthControls:
+          type: array
+          description: Métodos anticonceptivos del seguimiento diario
+          items:
+            type: integer
+    SleepHours:
+      type: integer
+      description: Horas de sueño del seguimiento diario
+      
