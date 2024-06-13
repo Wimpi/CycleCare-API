@@ -11,8 +11,10 @@ const {
     rateContent, 
     getContent, 
     registerArticle, 
-    getArticlesByUsername
-} = require('../database/dao/contentDAO');
+    getArticlesByUsername, 
+    getContentById, 
+    updateArticle, 
+    getAvarage} = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
 const path = require('path');
@@ -22,7 +24,6 @@ const directory = path.join(__dirname, '..', 'multimedia');
 const publishContent = async (req, res) => {
     const {title, description, creationDate, image} = req.body;    
     const {username} = req;
-    console.log("Sí pasé por aquí");
     try{
         const filename = `image_${Date.now()}.jpg`
         saveImage(image, filename)
@@ -132,7 +133,7 @@ const getArticleByMedic = async(req, res) => {
                     details: "No articles found for the user"
             });
         }
-        res.status(HttpStatusCodes.OK).json({articles: result});
+        res.status(HttpStatusCodes.OK).json(result);
 
     } catch (error){
         console.error(error);
@@ -144,4 +145,93 @@ const getArticleByMedic = async(req, res) => {
     }
 };
 
-module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic};
+const getArticleById = async(req, res) => {
+    const {contentId} = req.params;
+    try{
+        const result = await getContentById(contentId)
+            if(!result || result.length === 0){
+                return res.status(HttpStatusCodes.NOT_FOUND).json({
+                    error:true, 
+                    statusCode: HttpStatusCodes.NOT_FOUND, 
+                    details: "No articles found for the user"
+            });
+        }
+        res.status(HttpStatusCodes.OK).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true, 
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
+            details: "Error retrieving article data. Try again later"
+        });
+    }
+};
+
+const updateInformativeContent = async (req, res) => {
+    const {contentId, title, description, imageName, newImage} = req.body;
+    try {
+        const filename = `image_${Date.now()}.jpg`
+        saveImage(newImage, filename);
+        deleteImage(imageName);
+        const article = {contentId, title, description, filename}
+        const result = await updateArticle(article)
+
+        if(result.success) {
+            res.status(HttpStatusCodes.OK).json({
+                error:false, 
+                statusCode: HttpStatusCodes.OK, 
+                details: "Article updated"});
+        } else {
+            console.error("No se ha podido actualizar el contenido");
+            res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+                error:true, 
+                statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
+                details: "Error trying to update informative content"
+            });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error:true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error trying to publish content. Try again later"
+        });
+    }
+}
+
+const getAverageByContentId = async(req, res) => {
+    const {contentId} = req.params;
+    try{
+        const result = await getAvarage(contentId);
+        if(result == null){
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
+                error:true, 
+                statusCode: HttpStatusCodes.NOT_FOUND, 
+                details: "No articles found for the user"
+            });
+        }else{
+            res.status(HttpStatusCodes.OK).json(result);
+        }
+    }catch (error){
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true, 
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
+            details: "Error retrieving articles. Try again later"
+        });
+    }
+}
+
+function deleteImage(imageName){
+    const filePath = path.join(directory, imageName);
+    fs.unlink(filePath, (err) => {
+        if(err){
+            console.error("Error trying to delete image: ", err);
+        }else{
+            console.log("Image eliminated");
+        }
+    });
+}
+
+module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId};
