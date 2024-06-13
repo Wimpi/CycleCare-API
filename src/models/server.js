@@ -12,7 +12,12 @@ class Server{
     }
 
     middleware(){
-        this.app.use(cors());
+        const corsOptions = {
+            origin: ["http://localhost:8085"],
+            methods: "GET,PUT,PATCH,POST,DELETE",
+        };
+
+        this.app.use(cors(corsOptions));
         this.app.use(express.json({ limit: '50mb' }));
         this.app.use(express.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(express.static('public'));

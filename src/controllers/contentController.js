@@ -1,10 +1,3 @@
-//post contenido
-//get all contenido
-//get un contenido
-//update contenido
-//get promedio de calificacion por contenido
-
-const { error } = require('console');
 const fs = require('fs');
 
 const {

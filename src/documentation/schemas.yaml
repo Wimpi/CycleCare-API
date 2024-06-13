@@ -76,3 +76,92 @@ schemas:
         scheduleId:
           type: string
           description: ID del horario del recordatorio
+    InformativeContent:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID único del contenido informativo
+        title:
+          type: string
+          description: Título del contenido informativo
+        description:
+          type: string
+          description: Descripción del contenido informativo
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del contenido informativo
+        filename:
+          type: string
+          description: Nombre del archivo de imagen asociado con el contenido informativo
+        username:
+          type: string
+          description: Nombre de usuario del creador del contenido informativo
+    Article:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID único del artículo
+        title:
+          type: string
+          description: Título del artículo
+        description:
+          type: string
+          description: Descripción del artículo
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del artículo
+        filename:
+          type: string
+          description: Nombre del archivo de imagen asociado con el artículo
+        username:
+          type: string
+          description: Nombre de usuario del autor del artículo
+    NewArticle:
+      type: object
+      required:
+        - title
+        - description
+        - creationDate
+        - image
+      properties:
+        title:
+          type: string
+          description: Título del nuevo artículo
+        description:
+          type: string
+          description: Descripción del nuevo artículo
+        creationDate:
+          type: string
+          format: date-time
+          description: Fecha de creación del nuevo artículo
+        image:
+          type: string
+          description: Imagen en formato base64 del nuevo artículo
+    UpdateArticle:
+      type: object
+      required:
+        - contentId
+        - title
+        - description
+        - imageName
+        - newImage
+      properties:
+        contentId:
+          type: string
+          description: ID del contenido a actualizar
+        title:
+          type: string
+          description: Título del artículo a actualizar
+        description:
+          type: string
+          description: Descripción del artículo a actualizar
+        imageName:
+          type: string
+          description: Nombre del archivo de imagen anterior
+        newImage:
+          type: string
+          description: Nueva imagen en formato base64
