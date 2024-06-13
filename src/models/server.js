@@ -1,5 +1,7 @@
 const express = require ('express');
 const cors = require ('cors');
+const swaggerUi = require("swagger-ui-express");
+const { swaggerDocument} = require('../documentation/swagger');
 
 class Server{
     constructor(){
@@ -24,6 +26,7 @@ class Server{
         this.app.use("/apicyclecare/content", require('../routes/contentRoutes'));
         this.app.use("/apicyclecare/chart", require('../routes/chartRoutes'));
         this.app.use("/images", express.static('multimedia'));
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     }
 
     listen() {
