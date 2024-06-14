@@ -166,7 +166,7 @@ const updatePassword = async (req, res) => {
 
     try {
         const updateResult = await updateUserPassword(email, newPassword);
-        if (updateResult.success == true) {
+        if (updateResult.success) {
             return res.status(HttpStatusCodes.OK).json({
                 message: 'Password updated successfully'
             });
