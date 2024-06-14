@@ -77,7 +77,7 @@ const contentRate = async (req, res) => {
         const result = await rateContent(contentId, {rating, username});
 
         if(result.success) {
-            res.status(HttpStatusCodes.CREATED)
+            res.status(HttpStatusCodes.OK)
                     .json({
                         message: 'The content was rating succesfully'
                     });
@@ -99,7 +99,7 @@ const contentRate = async (req, res) => {
     }
 };
 
-const getInformativeContent = async(res) => {
+const getInformativeContent = async(req, res) => {
     try {
         const informativeContent = await getContent();
         if(!informativeContent || informativeContent.length === 0){
@@ -109,10 +109,9 @@ const getInformativeContent = async(res) => {
                 details: "Not informative content found"
             });
         }
-        res.status(HttpStatusCodes.OK).json(informativeContent);
+        res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
     } catch (error){
         console.error(error);
-        
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
             error: true,
             statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
