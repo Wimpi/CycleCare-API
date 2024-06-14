@@ -1,2 +1,4 @@
 /src/node_modules
 /src/.env
+/src/.scannerwork
+/src/sonar-project.properties
