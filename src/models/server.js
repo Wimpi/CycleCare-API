@@ -37,6 +37,7 @@ class Server{
     listen() {
         this.app.listen(this.port, ()=>{
             console.log(`Cycle Care Server listening in port ${this.port}`);
+            console.log(`http://localhost:${this.port}`);
         });
     }
 }
