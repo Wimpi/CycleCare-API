@@ -201,7 +201,7 @@ const getAverageByContentId = async(req, res) => {
             return res.status(HttpStatusCodes.NOT_FOUND).json({
                 error:true, 
                 statusCode: HttpStatusCodes.NOT_FOUND, 
-                details: "No articles found for the user"
+                details: "No articles found with that id"
             });
         }else{
             res.status(HttpStatusCodes.OK).json(result);
