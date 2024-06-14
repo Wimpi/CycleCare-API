@@ -125,8 +125,7 @@ const requestReset = async (req, res) => {
 
         await sendEmail(emailFound, 'Password Reset Request', htmlContent);
 
-        res.status(HttpStatusCodes.CREATED).json
-        ({
+        res.status(HttpStatusCodes.CREATED).json({
             message: 'Email sent. Check your inbox'
         });
     } catch (error) {
