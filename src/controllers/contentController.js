@@ -49,7 +49,7 @@ const publishContent = async (req, res) => {
 }
 
 function saveImage(base64Image, filename){
-    const matches = base64Image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    const matches = base64Image.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
     let imageData = base64Image;
 
     if(matches){
