@@ -40,9 +40,6 @@ const createCycleLog = async (cycleLog) => {
             );
         }
 
-        
-
-        // Check if there are existing periods for the user
         const [periodRows] = await (await connection).execute(
             'SELECT * FROM period WHERE username = ? ORDER BY startDate DESC LIMIT 1',
             [username]
@@ -74,13 +71,12 @@ const createCycleLog = async (cycleLog) => {
                     [creationDate, lastPeriod.periodId]
                 );
             } else if (differenceWithStartDate === -oneDayInMilliseconds) {
-                // If the new period starts exactly one day before the last period starts
+
                 await (await connection).execute(
                     'UPDATE period SET startDate = ? WHERE periodId = ?',
                     [creationDate, lastPeriod.periodId]
                 );
             } else {
-                // If the new period doesn't start exactly one day before or after the last period ends
                 await (await connection).execute(
                     'INSERT INTO period (username, startDate, endDate) VALUES (?, ?, ?)',
                     [username, creationDate, creationDate]

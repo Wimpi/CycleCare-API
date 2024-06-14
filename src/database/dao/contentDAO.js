@@ -128,8 +128,6 @@ const getAvarage = async(contentId) => {
     }
 }
 
-//Método para recuperar contenido por id
-
 module.exports = {
     rateContent, 
     getContent, 
