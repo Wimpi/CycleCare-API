@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
-const nodemailer = require("nodemailer");
 
 const sendEmail = async (to, subject, htmlContent) => {
 
