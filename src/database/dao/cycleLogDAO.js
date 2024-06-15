@@ -1,7 +1,7 @@
 const connection = require("../connection");
 
 const createCycleLog = async (cycleLog) => {
-    const { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = cycleLog;
+    const { username, creationDate, menstrualFlowId, symptoms, moods, medications, pills, birthControls } = cycleLog;
     try {
         await (await connection).beginTransaction();
         
@@ -11,123 +11,12 @@ const createCycleLog = async (cycleLog) => {
         );
 
         const cycleLogId = result.insertId;
-
-        if(sleepHours !== null){
-            await (await connection).execute(
-                'UPDATE cycleLog SET sleepHours = ? WHERE cycleLogId = ?',
-                [sleepHours, cycleLogId]
-            );
-        }
         
-        if (note !== null) {
-            await (await connection).execute(
-                'UPDATE cycleLog SET note = ? WHERE cycleLogId = ?',
-                [note, cycleLogId]
-            );
-        }
+        updateCycleData(cycleLogId, cycleLog);
 
-        if (menstrualFlowId !== null) {
-            await (await connection).execute(
-                'UPDATE cycleLog SET menstrualFlowId = ? WHERE cycleLogId = ?',
-                [menstrualFlowId, cycleLogId]
-            );
-        }
+        insertPeriodData(username, menstrualFlowId);
 
-        if (vaginalFlowId !== null) {
-            await (await connection).execute(
-                'UPDATE cycleLog SET vaginalFlowId = ? WHERE cycleLogId = ?',
-                [vaginalFlowId, cycleLogId]
-            );
-        }
-
-        const [periodRows] = await (await connection).execute(
-            'SELECT * FROM period WHERE username = ? ORDER BY startDate DESC LIMIT 1',
-            [username]
-        );
-
-        if (periodRows.length === 0 && menstrualFlowId !== null) {
-            await (await connection).execute(
-                'INSERT INTO period (username, startDate, endDate) VALUES (?, ?, ?)',
-                [username, creationDate, creationDate]
-            );
-        } else if (periodRows.length > 0) {
-            const lastPeriod = periodRows[0];
-            const lastEndDate = new Date(lastPeriod.endDate);
-            const lastStartDate = new Date(lastPeriod.startDate);
-            const currentStartDate = new Date(creationDate);
-
-            const lastEndDateAdjusted = new Date(lastEndDate.getFullYear(), lastEndDate.getMonth(), lastEndDate.getDate(), 0, 0, 0, 0);
-            const lastStartDateAdjusted = new Date(lastStartDate.getFullYear(), lastStartDate.getMonth(), lastStartDate.getDate(), 0, 0, 0, 0);
-            const currentStartDateAdjusted = new Date(currentStartDate.getFullYear(), currentStartDate.getMonth(), currentStartDate.getDate(), 0, 0, 0, 0);
-
-            const oneDayInMilliseconds = 86400000;
-            const differenceWithEndDate = currentStartDateAdjusted.getTime() - lastEndDateAdjusted.getTime();
-            const differenceWithStartDate = currentStartDateAdjusted.getTime() - lastStartDateAdjusted.getTime();
-
-            if (differenceWithEndDate === oneDayInMilliseconds) {
-
-                await (await connection).execute(
-                    'UPDATE period SET endDate = ? WHERE periodId = ?',
-                    [creationDate, lastPeriod.periodId]
-                );
-            } else if (differenceWithStartDate === -oneDayInMilliseconds) {
-
-                await (await connection).execute(
-                    'UPDATE period SET startDate = ? WHERE periodId = ?',
-                    [creationDate, lastPeriod.periodId]
-                );
-            } else {
-                await (await connection).execute(
-                    'INSERT INTO period (username, startDate, endDate) VALUES (?, ?, ?)',
-                    [username, creationDate, creationDate]
-                );
-            }
-        }
-
-        if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
-            for (const symptomId of symptoms) {
-                await (await connection).execute(
-                    'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
-                    [symptomId, cycleLogId]
-                );
-            }
-        }
-
-        if (moods !== null && Array.isArray(moods) && moods.length > 0) {
-            for (const moodId of moods) {
-                await (await connection).execute(
-                    'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
-                    [moodId, cycleLogId]
-                );
-            }
-        }
-
-        if (medications !== null && Array.isArray(medications) && medications.length > 0) {
-            for (const medicationId of medications) {
-                await (await connection).execute(
-                    'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
-                    [medicationId, cycleLogId]
-                );
-            }
-        }
-
-        if (pills !== null && Array.isArray(pills) && pills.length > 0) {
-            for (const pillId of pills) {
-                await (await connection).execute(
-                    'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
-                    [pillId, cycleLogId]
-                );
-            }
-        }
-
-        if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
-            for (const birthControlId of birthControls) {
-                await (await connection).execute(
-                    'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
-                    [birthControlId, cycleLogId]
-                );
-            }
-        }
+        insertEnumCycleData(cycleLogId, symptoms, moods, medications, pills, birthControls);
 
         await (await connection).commit();
 
@@ -138,6 +27,175 @@ const createCycleLog = async (cycleLog) => {
         throw error;
     }
 };
+
+const insertEnumCycleData = async (cycleLogId, symptoms, moods, medications, pills, birthControls) => {
+    
+    if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
+        for (const symptomId of symptoms) {
+            await (await connection).execute(
+                'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
+                [symptomId, cycleLogId]
+            );
+        }
+    }
+
+    if (moods !== null && Array.isArray(moods) && moods.length > 0) {
+        for (const moodId of moods) {
+            await (await connection).execute(
+                'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
+                [moodId, cycleLogId]
+            );
+        }
+    }
+
+    if (medications !== null && Array.isArray(medications) && medications.length > 0) {
+        for (const medicationId of medications) {
+            await (await connection).execute(
+                'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
+                [medicationId, cycleLogId]
+            );
+        }
+    }
+
+    if (pills !== null && Array.isArray(pills) && pills.length > 0) {
+        for (const pillId of pills) {
+            await (await connection).execute(
+                'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
+                [pillId, cycleLogId]
+            );
+        }
+    }
+
+    if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
+        for (const birthControlId of birthControls) {
+            await (await connection).execute(
+                'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
+                [birthControlId, cycleLogId]
+            );
+        }
+    }
+}
+
+const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
+    const { symptoms, moods, medications, pills, birthControls } = updatedCycleLog;
+
+    try {
+        await (await connection).beginTransaction();
+
+        updateCycleData(cycleLogId, updatedCycleLog);
+
+        await (await connection).execute('DELETE FROM symptomLog WHERE cycleLogId = ?', [cycleLogId]);
+        await (await connection).execute('DELETE FROM moodLog WHERE cycleLogId = ?', [cycleLogId]);
+        await (await connection).execute('DELETE FROM medicationLog WHERE cycleLogId = ?', [cycleLogId]);
+        await (await connection).execute('DELETE FROM pillLog WHERE cycleLogId = ?', [cycleLogId]);
+        await (await connection).execute('DELETE FROM birthControlLog WHERE cycleLogId = ?', [cycleLogId]);
+
+        insertEnumCycleData(cycleLogId, symptoms, moods, medications, pills, birthControls);
+
+        await (await connection).commit();
+
+        return { success: true };
+    } catch (error) {
+        await (await connection).rollback();
+        console.error('Error al actualizar el ciclo:', error);
+        throw error;
+    }
+};
+
+const insertPeriodData = async (username, menstrualFlowId) => {
+    const [periodRows] = await (await connection).execute(
+        'SELECT * FROM period WHERE username = ? ORDER BY startDate DESC LIMIT 1',
+        [username]
+    );
+
+    if (periodRows.length === 0 && menstrualFlowId !== null) {
+        await (await connection).execute(
+            'INSERT INTO period (username, startDate, endDate) VALUES (?, ?, ?)',
+            [username, creationDate, creationDate]
+        );
+    } else if (periodRows.length > 0) {
+        const lastPeriod = periodRows[0];
+        const lastEndDate = new Date(lastPeriod.endDate);
+        const lastStartDate = new Date(lastPeriod.startDate);
+        const currentStartDate = new Date(creationDate);
+
+        const lastEndDateAdjusted = new Date(lastEndDate.getFullYear(), lastEndDate.getMonth(), lastEndDate.getDate(), 0, 0, 0, 0);
+        const lastStartDateAdjusted = new Date(lastStartDate.getFullYear(), lastStartDate.getMonth(), lastStartDate.getDate(), 0, 0, 0, 0);
+        const currentStartDateAdjusted = new Date(currentStartDate.getFullYear(), currentStartDate.getMonth(), currentStartDate.getDate(), 0, 0, 0, 0);
+
+        const oneDayInMilliseconds = 86400000;
+        const differenceWithEndDate = currentStartDateAdjusted.getTime() - lastEndDateAdjusted.getTime();
+        const differenceWithStartDate = currentStartDateAdjusted.getTime() - lastStartDateAdjusted.getTime();
+
+        if (differenceWithEndDate === oneDayInMilliseconds) {
+
+            await (await connection).execute(
+                'UPDATE period SET endDate = ? WHERE periodId = ?',
+                [creationDate, lastPeriod.periodId]
+            );
+        } else if (differenceWithStartDate === -oneDayInMilliseconds) {
+
+            await (await connection).execute(
+                'UPDATE period SET startDate = ? WHERE periodId = ?',
+                [creationDate, lastPeriod.periodId]
+            );
+        } else {
+            await (await connection).execute(
+                'INSERT INTO period (username, startDate, endDate) VALUES (?, ?, ?)',
+                [username, creationDate, creationDate]
+            );
+        }
+    }
+}
+
+const updateCycleData = async (cycleLogId, updatedCycleLog) => {
+    const { sleepHours, note, menstrualFlowId, vaginalFlowId } = updatedCycleLog;
+
+    const updateQueries = [];
+    const updateParams = [];
+    
+    if (sleepHours !== undefined) {
+        if (sleepHours === null) {
+            updateQueries.push('sleepHours = NULL');
+        } else {
+            updateQueries.push('sleepHours = ?');
+            updateParams.push(sleepHours);
+        }
+    }
+
+    if (note !== undefined) {
+        if (note === null) {
+            updateQueries.push('note = NULL');
+        } else {
+            updateQueries.push('note = ?');
+            updateParams.push(note);
+        }
+    }
+
+    if (menstrualFlowId !== undefined) {
+        if (menstrualFlowId === null) {
+            updateQueries.push('menstrualFlowId = NULL');
+        } else {
+            updateQueries.push('menstrualFlowId = ?');
+            updateParams.push(menstrualFlowId);
+        }
+    }
+
+    if (vaginalFlowId !== undefined) {
+        if (vaginalFlowId === null) {
+            updateQueries.push('vaginalFlowId = NULL');
+        } else {
+            updateQueries.push('vaginalFlowId = ?');
+            updateParams.push(vaginalFlowId);
+        }
+    }
+
+    if (updateQueries.length > 0) {
+        const updateQuery = `UPDATE cycleLog SET ${updateQueries.join(', ')} WHERE cycleLogId = ?`;
+        updateParams.push(cycleLogId);
+        await (await connection).execute(updateQuery, updateParams);
+    }
+}
 
 const deleteCycleLog = async (cycleLogId, username) => {
     try {
@@ -164,115 +222,6 @@ const deleteCycleLog = async (cycleLogId, username) => {
     } catch (error) {
         await (await connection).rollback();
         console.error('Error al eliminar el ciclo:', error);
-        throw error;
-    }
-};
-
-const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
-    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, pills, birthControls } = updatedCycleLog;
-
-    try {
-        await (await connection).beginTransaction();
-
-        const updateQueries = [];
-        const updateParams = [];
-
-        if (sleepHours !== undefined) {
-            if (sleepHours === null) {
-                updateQueries.push('sleepHours = NULL');
-            } else {
-                updateQueries.push('sleepHours = ?');
-                updateParams.push(sleepHours);
-            }
-        }
-        if (note !== undefined) {
-            if (note === null) {
-                updateQueries.push('note = NULL');
-            } else {
-                updateQueries.push('note = ?');
-                updateParams.push(note);
-            }
-        }
-        if (menstrualFlowId !== undefined) {
-            if (menstrualFlowId === null) {
-                updateQueries.push('menstrualFlowId = NULL');
-            } else {
-                updateQueries.push('menstrualFlowId = ?');
-                updateParams.push(menstrualFlowId);
-            }
-        }
-        if (vaginalFlowId !== undefined) {
-            if (vaginalFlowId === null) {
-                updateQueries.push('vaginalFlowId = NULL');
-            } else {
-                updateQueries.push('vaginalFlowId = ?');
-                updateParams.push(vaginalFlowId);
-            }
-        }
-
-        if (updateQueries.length > 0) {
-            const updateQuery = `UPDATE cycleLog SET ${updateQueries.join(', ')} WHERE cycleLogId = ?`;
-            updateParams.push(cycleLogId);
-            await (await connection).execute(updateQuery, updateParams);
-        }
-
-        await (await connection).execute('DELETE FROM symptomLog WHERE cycleLogId = ?', [cycleLogId]);
-        await (await connection).execute('DELETE FROM moodLog WHERE cycleLogId = ?', [cycleLogId]);
-        await (await connection).execute('DELETE FROM medicationLog WHERE cycleLogId = ?', [cycleLogId]);
-        await (await connection).execute('DELETE FROM pillLog WHERE cycleLogId = ?', [cycleLogId]);
-        await (await connection).execute('DELETE FROM birthControlLog WHERE cycleLogId = ?', [cycleLogId]);
-
-        if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
-            for (const symptomId of symptoms) {
-                await (await connection).execute(
-                    'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
-                    [symptomId, cycleLogId]
-                );
-            }
-        }
-
-        if (moods !== null && Array.isArray(moods) && moods.length > 0) {
-            for (const moodId of moods) {
-                await (await connection).execute(
-                    'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
-                    [moodId, cycleLogId]
-                );
-            }
-        }
-
-        if (medications !== null && Array.isArray(medications) && medications.length > 0) {
-            for (const medicationId of medications) {
-                await (await connection).execute(
-                    'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
-                    [medicationId, cycleLogId]
-                );
-            }
-        }
-
-        if (pills !== null && Array.isArray(pills) && pills.length > 0) {
-            for (const pillId of pills) {
-                await (await connection).execute(
-                    'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
-                    [pillId, cycleLogId]
-                );
-            }
-        }
-
-        if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
-            for (const birthControlId of birthControls) {
-                await (await connection).execute(
-                    'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
-                    [birthControlId, cycleLogId]
-                );
-            }
-        }
-
-        await (await connection).commit();
-
-        return { success: true };
-    } catch (error) {
-        await (await connection).rollback();
-        console.error('Error al actualizar el ciclo:', error);
         throw error;
     }
 };
