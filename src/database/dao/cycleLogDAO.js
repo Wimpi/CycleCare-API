@@ -14,7 +14,7 @@ const createCycleLog = async (cycleLog) => {
         
         updateCycleData(cycleLogId, cycleLog);
 
-        insertPeriodData(username, menstrualFlowId);
+        insertPeriodData(username, menstrualFlowId, creationDate);
 
         insertEnumCycleData(cycleLogId, symptoms, moods, medications, pills, birthControls);
 
@@ -102,7 +102,7 @@ const updateCycleLog = async (cycleLogId, updatedCycleLog) => {
     }
 };
 
-const insertPeriodData = async (username, menstrualFlowId) => {
+const insertPeriodData = async (username, menstrualFlowId, creationDate) => {
     const [periodRows] = await (await connection).execute(
         'SELECT * FROM period WHERE username = ? ORDER BY startDate DESC LIMIT 1',
         [username]
