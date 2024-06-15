@@ -215,7 +215,7 @@ const resetPassword = async (req, res) => {
     try {
         await updatePassword(req, res);
         const { email } = req.params;
-        if(!email || !email.match(emailPattern){
+        if(!email || !email.match(emailPattern)){
             return res.status(HttpStatusCodes.BAD_REQUEST).json({
                 error: true,
                 statusCode: HttpStatusCodes.BAD_REQUEST,
@@ -250,7 +250,7 @@ const updatePassword = async (req, res) => {
     const { email } = req.params;
     const { newPassword, confirmPassword } = req.body;
     const validation = validateUpdatePasswordInput(newPassword, confirmPassword, email);
-    
+
     if (!validation.valid) {
         return res.status(HttpStatusCodes.BAD_REQUEST).json({
             error: true,
