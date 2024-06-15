@@ -95,7 +95,7 @@ const reminderUpdate = async (req, res) => {
             details: validation.message
         });
     }
-    
+
     try {
         const reminder = await getReminderById(reminderId);
         
@@ -108,7 +108,7 @@ const reminderUpdate = async (req, res) => {
             return; 
         }
         deleteScheduled(scheduleId);
-        const result = await updateReminder(reminderId, {description, title, creationDate, username});
+        const result = await updateReminder(reminderId, {description, title, creationDate, username, scheduleId});
 
         if (result.success) {
             const templatePath = path.join(__dirname, '../templates/reminder-template.html');
@@ -143,8 +143,8 @@ const validateUpdateReminderInput = (data, reminderId) => {
     if (isNaN(reminderId)) {
         return { valid: false, message: "Invalid reminder ID. Please provide a valid number." };
     }
-    if (scheduleId !== undefined && (isNaN(scheduleId) || scheduleId <= 0)) {
-        return { valid: false, message: "Invalid schedule ID. Please provide a valid number greater than 0." };
+    if (scheduleId !== undefined && !scheduleId) {
+        return { valid: false, message: "Invalid schedule ID." };
     }
     if (description !== undefined && !description.match(descriptionPattern)) {
         return { valid: false, message: "Invalid description. Please provide a valid description (1-200 characters, only Spanish alphabet characters and spaces)." };
