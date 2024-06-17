@@ -17,6 +17,15 @@ const directory = path.join(__dirname, '..', 'multimedia');
 const publishContent = async (req, res) => {
     const {title, description, creationDate, image} = req.body;    
     const {username} = req;
+
+    if(!title || !description || !creationDate || !image || !username){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+    }
+
     try{
         const filename = `image_${Date.now()}.jpg`
         saveImage(image, filename)
@@ -64,6 +73,14 @@ const contentRate = async (req, res) => {
     const {contentId} = req.params;
     const {rating} = req.body;
     const {username} = req;
+
+    if(!contentId || !rating || !username){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+    }
 
     try{
         const result = await rateContent(contentId, {rating, username});
@@ -121,7 +138,7 @@ const getArticleByMedic = async(req, res) => {
                 return res.status(HttpStatusCodes.NOT_FOUND).json({
                     error:true, 
                     statusCode: HttpStatusCodes.NOT_FOUND, 
-                    details: "No articles found for the user"
+                    details: "No articles found for this user"
             });
         }
         res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
@@ -138,16 +155,24 @@ const getArticleByMedic = async(req, res) => {
 
 const getArticleById = async(req, res) => {
     const {contentId} = req.params;
+
+    if(!contentId){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Content ID is required"
+        });
+    }
     try{
         const result = await getContentById(contentId)
             if(!result || result.length === 0){
                 return res.status(HttpStatusCodes.NOT_FOUND).json({
                     error:true, 
                     statusCode: HttpStatusCodes.NOT_FOUND, 
-                    details: "No articles found with that id"
+                    details: "No article found"
             });
         }
-        res.status(HttpStatusCodes.OK).json(result);
+        res.status(HttpStatusCodes.OK).json({Article: result});
     } catch (error) {
         console.error(error);
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -160,6 +185,15 @@ const getArticleById = async(req, res) => {
 
 const updateInformativeContent = async (req, res) => {
     const {contentId, title, description, imageName, newImage} = req.body;
+
+    if(!contentId || !title || !description || !imageName || !newImage){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+    }
+
     try {
         const filename = `image_${Date.now()}.jpg`
         saveImage(newImage, filename);
@@ -173,10 +207,10 @@ const updateInformativeContent = async (req, res) => {
                 statusCode: HttpStatusCodes.OK, 
                 details: "Article updated"});
         } else {
-            res.status(HttpStatusCodes.BAD_REQUEST).json({
+            res.status(HttpStatusCodes.NOT_FOUND).json({
                 error:true, 
-                statusCode: HttpStatusCodes.BAD_REQUEST, 
-                details: "Error trying to update informative content"
+                statusCode: HttpStatusCodes.NOT_FOUND, 
+                details: "Article doesn't found"
             });
         }
 
@@ -185,7 +219,7 @@ const updateInformativeContent = async (req, res) => {
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
             error:true,
             statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
-            details: "Error trying to publish content. Try again later"
+            details: "Error trying to update content. Try again later"
         });
     }
 }
