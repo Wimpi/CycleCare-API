@@ -328,7 +328,9 @@ const getMenstrualFlow = async (menstrualFlowId) => {
     try {
         const query = "SELECT * FROM menstrualFlow WHERE menstrualFlowId = ?";
         const [rows] = await (await connection).execute(query, [menstrualFlowId]);
-        return rows;
+        if (rows.length > 0) {
+            return rows[0];
+        }
     } catch (error) {
         console.error('Error al obtener el flujo menstrual:', error);
         throw error;
@@ -343,7 +345,9 @@ const getVaginalFlow = async (vaginalFlowId) => {
     try {
         const query = "SELECT * FROM vaginalFlow WHERE vaginalFlowId = ?";
         const [rows] = await (await connection).execute(query, [vaginalFlowId]);
-        return rows;
+        if (rows.length > 0) {
+            return rows[0];
+        }
     } catch (error) {
         console.error('Error al obtener el flujo vaginal:', error);
         throw error;
