@@ -7,7 +7,8 @@ const {
     getArticlesByUsername, 
     getContentById, 
     updateArticle, 
-    getAvarage} = require('../database/dao/contentDAO');
+    getAvarage, 
+    registerVideo} = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
 const path = require('path');
@@ -55,6 +56,48 @@ const publishContent = async (req, res) => {
         });
     }
 }
+
+const publishVideo = async (req, res) => {
+    const {title, creationDate} = req.body;    
+    const {username} = req;
+
+    if(!title || !creationDate || !username){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+    }
+
+    try{
+        const filename = `image_${Date.now()}.jpg`
+        const video = {title, description, creationDate, filename, username}
+        const result = await registerVideo(video);
+        
+        if(result.success) {
+            res.status(HttpStatusCodes.CREATED).json({
+                error: false,
+                statusCode: HttpStatusCodes.CREATED,
+                details: "Video created"});
+                
+        } else { 
+            res.status(HttpStatusCodes.BAD_REQUEST).json({
+                error: true,
+                statusCode: HttpStatusCodes.BAD_REQUEST,
+                details: "Error creating new video"
+            });
+        }
+
+    }catch(error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error:true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error trying to publish content. Try again later"
+        });
+    }
+}
+
 
 function saveImage(base64Image, filename){
     const matches = base64Image.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
@@ -109,6 +152,27 @@ const contentRate = async (req, res) => {
 };
 
 const getInformativeContent = async(req, res) => {
+    try {
+        const informativeContent = await getContent();
+        if(!informativeContent || informativeContent.length === 0){
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
+                error: true, 
+                statusCode: HttpStatusCodes.NOT_FOUND, 
+                details: "Not informative content found"
+            });
+        }
+        res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
+    } catch (error){
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
+            details: "Error retrieving informative content. Try again later"
+        });
+    }
+};
+
+const getVideo = async(req, res) => {
     try {
         const informativeContent = await getContent();
         if(!informativeContent || informativeContent.length === 0){
@@ -258,4 +322,4 @@ function deleteImage(imageName){
     });
 }
 
-module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId};
+module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId, publishVideo};

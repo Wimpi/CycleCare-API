@@ -16,6 +16,21 @@ const registerArticle = async(article) =>{
     }
 }
 
+const registerVideo = async(video) =>{
+    try {
+        const query = "INSERT INTO content (title, creationDate, media, username, isVideo) VALUES (?, ?, ?, ?, ?)";
+        await(await connection).execute(
+            query, 
+            [video.title, video.creationDate, video.filename, video.username, 1]
+        );
+        return {success: true}
+    } catch (error) {
+        await (await connection).rollback();
+        console.error("Article register error:", error);
+        throw error;
+    }
+}
+
 const updateArticle = async(article) => {
     try{
         const query = "UPDATE content SET title = ?, description = ?, media = ? WHERE contentId = ?";
@@ -129,4 +144,5 @@ module.exports = {
     getArticlesByUsername, 
     getContentById, 
     updateArticle, 
-    getAvarage};
+    getAvarage, 
+    registerVideo};
