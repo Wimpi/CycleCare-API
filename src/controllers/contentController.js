@@ -128,7 +128,7 @@ const getArticleByMedic = async(req, res) => {
                 return res.status(HttpStatusCodes.NOT_FOUND).json({
                     error:true, 
                     statusCode: HttpStatusCodes.NOT_FOUND, 
-                    details: "No articles found for the user"
+                    details: "No articles found for this user"
             });
         }
         res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
@@ -151,10 +151,10 @@ const getArticleById = async(req, res) => {
                 return res.status(HttpStatusCodes.NOT_FOUND).json({
                     error:true, 
                     statusCode: HttpStatusCodes.NOT_FOUND, 
-                    details: "No articles found for the user"
+                    details: "No articles found"
             });
         }
-        res.status(HttpStatusCodes.OK).json(result);
+        res.status(HttpStatusCodes.OK).json({Article: result});
     } catch (error) {
         console.error(error);
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
