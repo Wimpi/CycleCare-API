@@ -37,10 +37,9 @@ const publishContent = async (req, res) => {
                 details: "Article created"});
                 
         } else { 
-            console.error("No he podido registrar el contenido");
-            res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(HttpStatusCodes.BAD_REQUEST).json({
                 error: true,
-                statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+                statusCode: HttpStatusCodes.BAD_REQUEST,
                 details: "Error creating new article"
             });
         }
@@ -124,15 +123,15 @@ const getArticleByMedic = async(req, res) => {
     const {username} = req;
     
     try{
-        const result = await getArticlesByUsername(username);
-            if(!result || result.length === 0){
+        const informativeContent = await getArticlesByUsername(username);
+            if(!informativeContent || informativeContent.length === 0){
                 return res.status(HttpStatusCodes.NOT_FOUND).json({
                     error:true, 
                     statusCode: HttpStatusCodes.NOT_FOUND, 
                     details: "No articles found for the user"
             });
         }
-        res.status(HttpStatusCodes.OK).json(result);
+        res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
 
     } catch (error){
         console.error(error);
@@ -181,10 +180,9 @@ const updateInformativeContent = async (req, res) => {
                 statusCode: HttpStatusCodes.OK, 
                 details: "Article updated"});
         } else {
-            console.error("No se ha podido actualizar el contenido");
-            res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(HttpStatusCodes.BAD_REQUEST).json({
                 error:true, 
-                statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR, 
+                statusCode: HttpStatusCodes.BAD_REQUEST, 
                 details: "Error trying to update informative content"
             });
         }
