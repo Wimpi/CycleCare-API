@@ -1,7 +1,7 @@
 import grpc
 from concurrent import futures
 import os
-import video__pb2
+import video_pb2
 import video_pb2_grpc
 
 SERVER_PORT = "3000"
