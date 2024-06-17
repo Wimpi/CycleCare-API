@@ -108,7 +108,6 @@ const getCycleLogByDay = async (req, res) => {
 const getCycleLogs = async (req, res) => {
     const { username } = req;
     const { month, year } = req.params;
-    
     try {
         const detailedCycleLogs = await getDetailedCycleLogs(month, year, username);
 
