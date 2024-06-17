@@ -16,6 +16,20 @@ const registerArticle = async(article) =>{
     }
 }
 
+const updateArticle = async(article) => {
+    try{
+        const query = "UPDATE content SET title = ?, description = ?, media = ? WHERE contentId = ?";
+        const [result] = await (await connection).execute(
+          query, 
+          [article.title, article.description, article.filename, article.contentId]
+        );
+        return {success: true}
+    } catch (error) {
+        console.error('Error trying to update informative content from DAO: ', error);
+        throw error;
+    }
+}
+
 
 const rateContent = async (contentId, rateData) => {
     const {rating, username} = rateData;
@@ -93,26 +107,6 @@ const getContentById = async(contentId) => {
         throw error;
     }
 };
-
-const updateArticle = async(article) => {
-    try{
-        const query = "UPDATE content SET title = ?, description = ?, media = ? WHERE contentId = ?";
-        const [result] = await (await connection).execute(
-          query, 
-          [article.title, article.description, article.filename, article.contentId]
-        );
-
-        if(result.affectedRows>0){
-            return {success: true};
-        } else {
-            return {success:false};
-        }
-
-    } catch (error) {
-        console.error('Error trying to update informative content from DAO: ', error);
-        throw error;
-    }
-}
 
 const getAvarage = async(contentId) => {
     try{
