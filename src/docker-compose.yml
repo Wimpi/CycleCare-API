@@ -15,14 +15,14 @@ services:
       MYSQL_ROOT_PASSWORD: CYCL3C4RE
   cyclecare_grpc_video:
     build: 
-      context: //meter de github
+      context: ./grpc_api
     container_name: cyclecare_grpc_video_container
     restart: always
     ports:
       - 3000:3000
   cyclecare_restapi:
     build: 
-      context: .
+      context: ./rest_api
     container_name: cyclecare_restapi_container
     restart: always
     ports:
