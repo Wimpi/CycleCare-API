@@ -182,16 +182,16 @@ INSERT INTO vaginalFlow (name) VALUES ('Cremoso');
 INSERT INTO vaginalFlow (name) VALUES ('Acuoso');
 INSERT INTO vaginalFlow (name) VALUES ('Elástico');
 
-INSERT INTO moods (name) VALUES ('Feliz');
-INSERT INTO moods (name) VALUES ('Triste');
-INSERT INTO moods (name) VALUES ('Ansiosa');
-INSERT INTO moods (name) VALUES ('Enojada');
-INSERT INTO moods (name) VALUES ('Cansada');
-INSERT INTO moods (name) VALUES ('Energética');
-INSERT INTO moods (name) VALUES ('Relajada');
-INSERT INTO moods (name) VALUES ('Concentrada');
-INSERT INTO moods (name) VALUES ('Estresada');
-INSERT INTO moods (name) VALUES ('Irritada');
+INSERT INTO mood (name) VALUES ('Feliz');
+INSERT INTO mood (name) VALUES ('Triste');
+INSERT INTO mood (name) VALUES ('Ansiosa');
+INSERT INTO mood (name) VALUES ('Enojada');
+INSERT INTO mood (name) VALUES ('Cansada');
+INSERT INTO mood (name) VALUES ('Energética');
+INSERT INTO mood (name) VALUES ('Relajada');
+INSERT INTO mood (name) VALUES ('Concentrada');
+INSERT INTO mood (name) VALUES ('Estresada');
+INSERT INTO mood (name) VALUES ('Irritada');
 
 INSERT INTO menstrualFlow (name) VALUES ('Ligero');
 INSERT INTO menstrualFlow (name) VALUES ('Moderado');
