@@ -3,10 +3,10 @@ const connection = require("../connection");
 
 const registerArticle = async(article) =>{
     try {
-        const query = "INSERT INTO content (title, description, creationDate, media, username) VALUES (?, ?, ?, ?, ?)";
+        const query = "INSERT INTO content (title, description, creationDate, media, username, isVideo) VALUES (?, ?, ?, ?, ?, ?)";
         await(await connection).execute(
             query, 
-            [article.title, article.description, article.creationDate, article.filename, article.username]
+            [article.title, article.description, article.creationDate, article.filename, article.username, 0]
         );
         return {success: true}
     } catch (error) {
@@ -68,7 +68,7 @@ const rateContent = async (contentId, rateData) => {
 
 const getContent = async() => {
     try{
-        const query = "SELECT * FROM content ORDER BY contentId DESC LIMIT 10"; 
+        const query = "SELECT * FROM content WHERE isVideo = 0 ORDER BY contentId DESC LIMIT 10"; 
         const [rows] = await (await connection).execute(query);
     
         return rows;
@@ -80,7 +80,7 @@ const getContent = async() => {
 
 const getArticlesByUsername = async(username) => {
     try{
-        const query = 'SELECT * FROM content WHERE username = ?'
+        const query = 'SELECT * FROM content WHERE username = ? AND isVideo = 0'
 
         const [rows] = await(await connection).execute(
             query, 
