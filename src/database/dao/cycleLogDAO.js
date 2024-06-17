@@ -372,31 +372,31 @@ const getCycleLogByDate = async (username, month, year, day) => {
             'SELECT symptomId FROM symptomLog WHERE cycleLogId = ?',
             [cycleLogId]
         );
-        const symptoms = symptomsRows.map(row => row.symptomId);
+        const symptoms = symptomsRows.map(row => ({ symptomId: row.symptomId }));
 
         const [moodsRows] = await (await connection).execute(
             'SELECT moodId FROM moodLog WHERE cycleLogId = ?',
             [cycleLogId]
         );
-        const moods = moodsRows.map(row => row.moodId);
+        const moods = moodsRows.map(row => ({ moodId: row.moodId }));
 
         const [medicationsRows] = await (await connection).execute(
             'SELECT medicationId FROM medicationLog WHERE cycleLogId = ?',
             [cycleLogId]
         );
-        const medications = medicationsRows.map(row => row.medicationId);
+        const medications = medicationsRows.map(row => ({ medicationId: row.medicationId }));
 
         const [pillsRows] = await (await connection).execute(
             'SELECT pillId FROM pillLog WHERE cycleLogId = ?',
             [cycleLogId]
         );
-        const pills = pillsRows.map(row => row.pillId);
+        const pills = pillsRows.map(row => ({ pillId: row.pillId }));
 
         const [birthControlsRows] = await (await connection).execute(
             'SELECT birthControlId FROM birthControlLog WHERE cycleLogId = ?',
             [cycleLogId]
         );
-        const birthControls = birthControlsRows.map(row => row.birthControlId);
+        const birthControls = birthControlsRows.map(row => ({ birthControlId: row.birthControlId }));
 
         return {
             ...cycleLog,
