@@ -25,13 +25,13 @@ class VideoServiceServicer(video_pb2_grpc.VideoServiceServicer):
                 f.write(video_chunk.data)
                 print('.', end='', flush=True)
 
-        return video__pb2.StreamVideoRequest(filename=filename)
+        return video_pb2.StreamVideoRequest(filename=filename)
 
     def streamVideo(self, request, context):
         file_path = os.path.join(UPLOAD_DIR, request.filename)
         with open(file_path, 'rb') as content_file:
             while chunk_bytes := content_file.read(chunk_size):
-                yield video__pb2.VideoChunkResponse(data=chunk, filename=request.filename)
+                yield video_pb2.VideoChunkResponse(data=chunk, filename=request.filename)
                 print('.', end='', flush=True)
 
 def serve():
