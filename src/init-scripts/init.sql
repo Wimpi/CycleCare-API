@@ -212,3 +212,5 @@ INSERT INTO pill (status) VALUES ('Tarde');
 
 INSERT INTO birthControl (name) VALUES ('Insertado');
 INSERT INTO birthControl (name) VALUES ('Removido');
+
+ALTER TABLE content ADD COLUMN isVideo TINYINT(1);

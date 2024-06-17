@@ -13,5 +13,22 @@ services:
       MYSQL_PASSWORD: CYCL3C4RE
       MYSQL_DB: cycleCareDB
       MYSQL_ROOT_PASSWORD: CYCL3C4RE
+  cyclecare_grpc_video:
+    build: 
+      context: //meter de github
+    container_name: cyclecare_grpc_video_container
+    restart: always
+    ports:
+      - 3000:3000
+  cyclecare_restapi:
+    build: 
+      context: .
+    container_name: cyclecare_restapi_container
+    restart: always
+    ports:
+      - 8085:8085
+    depends_on:
+      - cyclecare_db
+      - cyclecare_grpc_video
 volumes:
   init-scripts:
