@@ -1,4 +1,4 @@
-/src/node_modules
-/src/.env
-/src/.scannerwork
-/src/sonar-project.properties
+/src/rest_api/node_modules
+/src/rest_api/.env
+/src/rest_api/.scannerwork
+/src/rest_api/sonar-project.properties
