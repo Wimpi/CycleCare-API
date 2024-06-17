@@ -31,46 +31,46 @@ const createCycleLog = async (cycleLog) => {
 const insertEnumCycleData = async (cycleLogId, symptoms, moods, medications, pills, birthControls) => {
     
     if (symptoms !== null && Array.isArray(symptoms) && symptoms.length > 0) {
-        for (const symptomId of symptoms) {
+        for (const symptom of symptoms) {
             await (await connection).execute(
                 'INSERT INTO symptomLog (symptomId, cycleLogId) VALUES (?, ?)',
-                [symptomId, cycleLogId]
+                [symptom.symptomId, cycleLogId]
             );
         }
     }
 
     if (moods !== null && Array.isArray(moods) && moods.length > 0) {
-        for (const moodId of moods) {
+        for (const mood of moods) {
             await (await connection).execute(
                 'INSERT INTO moodLog (moodId, cycleLogId) VALUES (?, ?)',
-                [moodId, cycleLogId]
+                [mood.moodId, cycleLogId]
             );
         }
     }
 
     if (medications !== null && Array.isArray(medications) && medications.length > 0) {
-        for (const medicationId of medications) {
+        for (const medication of medications) {
             await (await connection).execute(
                 'INSERT INTO medicationLog (medicationId, cycleLogId) VALUES (?, ?)',
-                [medicationId, cycleLogId]
+                [medication.medicationId, cycleLogId]
             );
         }
     }
 
     if (pills !== null && Array.isArray(pills) && pills.length > 0) {
-        for (const pillId of pills) {
+        for (const pill of pills) {
             await (await connection).execute(
                 'INSERT INTO pillLog (pillId, cycleLogId) VALUES (?, ?)',
-                [pillId, cycleLogId]
+                [pill.pillId, cycleLogId]
             );
         }
     }
 
     if (birthControls !== null && Array.isArray(birthControls) && birthControls.length > 0) {
-        for (const birthControlId of birthControls) {
+        for (const birthControl of birthControls) {
             await (await connection).execute(
                 'INSERT INTO birthControlLog (birthControlId, cycleLogId) VALUES (?, ?)',
-                [birthControlId, cycleLogId]
+                [birthControl.birthControlId, cycleLogId]
             );
         }
     }
@@ -173,7 +173,7 @@ const updateCycleData = async (cycleLogId, updatedCycleLog) => {
     }
 
     if (menstrualFlowId !== undefined) {
-        if (menstrualFlowId === null) {
+        if (menstrualFlowId === null || menstrualFlowId == 0) {
             updateQueries.push('menstrualFlowId = NULL');
         } else {
             updateQueries.push('menstrualFlowId = ?');
@@ -182,7 +182,7 @@ const updateCycleData = async (cycleLogId, updatedCycleLog) => {
     }
 
     if (vaginalFlowId !== undefined) {
-        if (vaginalFlowId === null) {
+        if (vaginalFlowId === null || vaginalFlowId == 0) {
             updateQueries.push('vaginalFlowId = NULL');
         } else {
             updateQueries.push('vaginalFlowId = ?');
