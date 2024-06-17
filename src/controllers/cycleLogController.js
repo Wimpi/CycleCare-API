@@ -50,10 +50,10 @@ const registerCycleLog = async (req, res) => {
 
 const updateCycleLogEntry = async (req, res) => {
     const { cycleLogId } = req.params;
-    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls } = req.body;
+    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, birthControls } = req.body;
     const { username } = req;
 
-    const updatedCycleLog = { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls, username };
+    const updatedCycleLog = { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, birthControls, username };
 
     try {
         const result = await updateCycleLog(cycleLogId, updatedCycleLog);
