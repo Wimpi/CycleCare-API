@@ -29,6 +29,5 @@ services:
       - 8085:8085
     depends_on:
       - cyclecare_db
-      - cyclecare_grpc_video
 volumes:
   init-scripts:
