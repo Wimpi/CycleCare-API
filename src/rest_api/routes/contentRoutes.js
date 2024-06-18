@@ -8,7 +8,8 @@ const {
     getArticleByMedic,
     getArticleById,
     updateInformativeContent,
-    getAverageByContentId
+    getAverageByContentId, 
+    publishVideo
 } = require('../controllers/contentController');
 
 const router = Router();
@@ -226,5 +227,8 @@ router.post('/update-informative-content', [validateJWT], updateInformativeConte
  *         description: Error interno del servidor
  */
 router.get('/get-average-by-content/:contentId', [validateJWT], getAverageByContentId);
+
+
+router.post('/publish-video', [validateJWT], publishVideo);
 
 module.exports = router;

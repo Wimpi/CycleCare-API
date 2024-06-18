@@ -160,3 +160,57 @@ CREATE TABLE birthControlLog (
     FOREIGN KEY (birthControlId) REFERENCES birthControl(birthControlId),
     FOREIGN KEY (cycleLogId) REFERENCES cycleLog(cycleLogId)
 );
+
+INSERT INTO symptom (name) VALUES ('Dolor abdominal');
+INSERT INTO symptom (name) VALUES ('Sensibilidad en los senos');
+INSERT INTO symptom (name) VALUES ('Acné');
+INSERT INTO symptom (name) VALUES ('Hinchazón abdominal');
+INSERT INTO symptom (name) VALUES ('Fatiga');
+INSERT INTO symptom (name) VALUES ('Dolor de cabeza');
+INSERT INTO symptom (name) VALUES ('Náuseas');
+INSERT INTO symptom (name) VALUES ('Mareos');
+INSERT INTO symptom (name) VALUES ('Antojos');
+INSERT INTO symptom (name) VALUES ('Estreñimiento');
+INSERT INTO symptom (name) VALUES ('Diarrea');
+INSERT INTO symptom (name) VALUES ('Insomnio');
+INSERT INTO symptom (name) VALUES ('Picazón vaginal');
+INSERT INTO symptom (name) VALUES ('Dolor en vulva');
+
+INSERT INTO vaginalFlow (name) VALUES ('Seco');
+INSERT INTO vaginalFlow (name) VALUES ('Pegajoso');
+INSERT INTO vaginalFlow (name) VALUES ('Cremoso');
+INSERT INTO vaginalFlow (name) VALUES ('Acuoso');
+INSERT INTO vaginalFlow (name) VALUES ('Elástico');
+
+INSERT INTO mood (name) VALUES ('Feliz');
+INSERT INTO mood (name) VALUES ('Triste');
+INSERT INTO mood (name) VALUES ('Ansiosa');
+INSERT INTO mood (name) VALUES ('Enojada');
+INSERT INTO mood (name) VALUES ('Cansada');
+INSERT INTO mood (name) VALUES ('Energética');
+INSERT INTO mood (name) VALUES ('Relajada');
+INSERT INTO mood (name) VALUES ('Concentrada');
+INSERT INTO mood (name) VALUES ('Estresada');
+INSERT INTO mood (name) VALUES ('Irritada');
+
+INSERT INTO menstrualFlow (name) VALUES ('Ligero');
+INSERT INTO menstrualFlow (name) VALUES ('Moderado');
+INSERT INTO menstrualFlow (name) VALUES ('Abundante');
+
+INSERT INTO medication (name) VALUES ('Terapia hormonal');
+INSERT INTO medication (name) VALUES ('Pastilla de emergencia');
+INSERT INTO medication (name) VALUES ('Analgésicos');
+INSERT INTO medication (name) VALUES ('Antidepresivos');
+INSERT INTO medication (name) VALUES ('Antibióticos');
+INSERT INTO medication (name) VALUES ('Antihistamínicos');
+
+INSERT INTO pill (status) VALUES ('Tomada');
+INSERT INTO pill (status) VALUES ('Olvidada');
+INSERT INTO pill (status) VALUES ('Dosis doble');
+INSERT INTO pill (status) VALUES ('Sin dosis');
+INSERT INTO pill (status) VALUES ('Tarde');
+
+INSERT INTO birthControl (name) VALUES ('Insertado');
+INSERT INTO birthControl (name) VALUES ('Removido');
+
+ALTER TABLE content ADD COLUMN isVideo TINYINT(1);

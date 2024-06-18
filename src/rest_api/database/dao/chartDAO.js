@@ -3,12 +3,7 @@ const connection = require("../connection");
 const getSleepHours = async(username) =>{
     try{
         const query = 
-        "SELECT DAYNAME(creationDate) AS dayOfWeek, SUM(sleepHours) AS totalSleepHours "+
-        "FROM cycleLog "+
-        "WHERE username = ? "+
-        "AND creationDate BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND NOW() "+
-        "GROUP BY DAYOFWEEK(creationDate), DAYNAME(creationDate) "+
-        "ORDER BY DAYOFWEEK(creationDate);"
+        "SELECT DAYNAME(creationDate) AS dayOfWeek, SUM(sleepHours) AS totalSleepHours FROM cycleLog WHERE username = ? AND creationDate BETWEEN DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY) AND CURDATE() GROUP BY DAYOFWEEK(creationDate), DAYNAME(creationDate) ORDER BY DAYOFWEEK(creationDate)"
 
         const[rows] = await (await connection).execute(
             query,

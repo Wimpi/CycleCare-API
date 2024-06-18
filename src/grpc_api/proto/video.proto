@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package CycleCare;
+
+message VideoChunkResponse {
+  bytes data = 1;
+  string filename = 2;
+}
+
+message StreamVideoRequest {
+  string filename = 1;
+}
+
+service VideoService {
+  rpc uploadVideo(stream VideoChunkResponse) returns (StreamVideoRequest);
+  rpc streamVideo(StreamVideoRequest) returns (stream VideoChunkResponse);
+}

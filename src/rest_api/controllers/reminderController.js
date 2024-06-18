@@ -19,6 +19,15 @@ const registerReminder = async (req, res) => {
     const { description, title, creationDate } = req.body;
     const { username } = req;
 
+    const validation = validateReminderInput(req.body);
+    if (!validation.valid) {
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: validation.message
+        });
+    }
+
     try {
         const user = await findUserByUsername(username);
         const email = user.email;
@@ -53,10 +62,40 @@ const registerReminder = async (req, res) => {
     }
 };
 
+const descriptionPattern = /^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ ]{1,200}$/;
+const titlePattern = /^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ ]{1,70}$/;
+
+const validateReminderInput = (data) => {
+    const { description, title, creationDate } = data;
+
+    if (!description || !description.match(descriptionPattern)) {
+        return { valid: false, message: "Invalid description. Please provide a valid description (1-200 characters, only Spanish alphabet characters and spaces)." };
+    }
+    if (!title || !title.match(titlePattern)) {
+        return { valid: false, message: "Invalid title. Please provide a valid title (1-70 characters, only Spanish alphabet characters and spaces)." };
+    }
+    if (!creationDate || isNaN(Date.parse(creationDate))) {
+        return { valid: false, message: "Invalid creation date. Please provide a valid date." };
+    }
+
+    return { valid: true };
+};
+
 const reminderUpdate = async (req, res) => {
     const { reminderId } = req.params;
     const { description, title, creationDate, scheduleId} = req.body;
     const { username } = req;
+
+    const validation = validateUpdateReminderInput(req.body, reminderId);
+
+    if (!validation.valid) {
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: validation.message
+        });
+    }
+
     try {
         const reminder = await getReminderById(reminderId);
         
@@ -69,7 +108,7 @@ const reminderUpdate = async (req, res) => {
             return; 
         }
         deleteScheduled(scheduleId);
-        const result = await updateReminder(reminderId, {description, title, creationDate, username});
+        const result = await updateReminder(reminderId, {description, title, creationDate, username, scheduleId});
 
         if (result.success) {
             const templatePath = path.join(__dirname, '../templates/reminder-template.html');
@@ -97,6 +136,28 @@ const reminderUpdate = async (req, res) => {
         });
     }
 }
+
+const validateUpdateReminderInput = (data, reminderId) => {
+    const { description, title, creationDate, scheduleId } = data;
+
+    if (isNaN(reminderId)) {
+        return { valid: false, message: "Invalid reminder ID. Please provide a valid number." };
+    }
+    if (scheduleId !== undefined && !scheduleId) {
+        return { valid: false, message: "Invalid schedule ID." };
+    }
+    if (description !== undefined && !description.match(descriptionPattern)) {
+        return { valid: false, message: "Invalid description. Please provide a valid description (1-200 characters, only Spanish alphabet characters and spaces)." };
+    }
+    if (title !== undefined && !title.match(titlePattern)) {
+        return { valid: false, message: "Invalid title. Please provide a valid title (1-70 characters, only Spanish alphabet characters and spaces)." };
+    }
+    if (creationDate !== undefined && isNaN(Date.parse(creationDate))) {
+        return { valid: false, message: "Invalid creation date. Please provide a valid date." };
+    }
+
+    return { valid: true };
+};
 
 const getCurrentUserReminders = async (req, res) => {
     const { username } = req;

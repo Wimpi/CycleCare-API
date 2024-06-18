@@ -28,7 +28,7 @@ const updateReminderWithScheduleId = async (reminderId, scheduleId) => {
 
 const updateReminder = async (reminderId, newReminderData) => {
     const {description, title, creationDate, username} = newReminderData;
-
+    
     try{
         const query = "UPDATE reminder SET description = ?, title = ?, creationDate = ? WHERE reminderId = ? AND username = ?";
         
