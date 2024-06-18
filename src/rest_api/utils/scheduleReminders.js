@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const { v4: uuidv4 } = require('uuid');
+const { sendEmail } = require('./sendEmail');
 
 const scheduledTasks = {};
 

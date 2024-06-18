@@ -18,10 +18,10 @@ const { getMenstrualCycleByUser } = require('../database/dao/menstrualCycleDAO')
 const HttpStatusCodes = require('../utils/enums');
 
 const registerCycleLog = async (req, res) => {
-    const { sleepHours, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls } = req.body;
+    const { sleepHours, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, pills, medications, birthControls } = req.body;
     const { username } = req;
 
-    const cycleLog = { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls };
+    const cycleLog = { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, pills, moods, medications, birthControls };
 
     try {
         const result = await createCycleLog(cycleLog);
@@ -50,10 +50,10 @@ const registerCycleLog = async (req, res) => {
 
 const updateCycleLogEntry = async (req, res) => {
     const { cycleLogId } = req.params;
-    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls } = req.body;
+    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, birthControls } = req.body;
     const { username } = req;
 
-    const updatedCycleLog = { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, medications, birthControls, username };
+    const updatedCycleLog = { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, birthControls, username };
 
     try {
         const result = await updateCycleLog(cycleLogId, updatedCycleLog);
@@ -108,7 +108,6 @@ const getCycleLogByDay = async (req, res) => {
 const getCycleLogs = async (req, res) => {
     const { username } = req;
     const { month, year } = req.params;
-    
     try {
         const detailedCycleLogs = await getDetailedCycleLogs(month, year, username);
 
