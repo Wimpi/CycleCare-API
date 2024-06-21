@@ -28,10 +28,17 @@ const sendEmail = async (to, subject, htmlContent) => {
 };
 
 const loadTemplate = (filePath, replacements) => {
-    const template = fs.readFileSync(filePath, 'utf8');
-    return Object.keys(replacements).reduce((template, key) => {
-        return template.replace(new RegExp(`{${key}}`, 'g'), replacements[key]);
-    }, template);
+    try {
+        const template = fs.readFileSync(filePath, 'utf8');
+        return Object.keys(replacements).reduce((template, key) => {
+            const escapedKey = key.replace(/[%]/g, '\\$&');
+            const regex = new RegExp(`{${escapedKey}}`, 'g');
+            return template.replace(regex, replacements[key]);
+        }, template);
+    } catch (err) {
+        console.error(`Error reading file from path: ${filePath}`, err);
+        return '';
+    }
 };
 
 module.exports = { sendEmail, loadTemplate };
