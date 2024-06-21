@@ -22,7 +22,7 @@ const registerCycleLog = async (req, res) => {
     const { username } = req;
 
     const cycleLog = { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, pills, moods, medications, birthControls };
-
+    console.log(cycleLog);
     try {
         const result = await createCycleLog(cycleLog);
 
@@ -54,7 +54,6 @@ const updateCycleLogEntry = async (req, res) => {
     const { username } = req;
 
     const updatedCycleLog = { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, birthControls, username };
-
     try {
         const result = await updateCycleLog(cycleLogId, updatedCycleLog);
 
