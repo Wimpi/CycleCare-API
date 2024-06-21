@@ -18,11 +18,10 @@ const { getMenstrualCycleByUser } = require('../database/dao/menstrualCycleDAO')
 const HttpStatusCodes = require('../utils/enums');
 
 const registerCycleLog = async (req, res) => {
-    const { sleepHours, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, moods, pills, medications, birthControls } = req.body;
+    const { sleepHours, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, moods, pills, medications, birthControls } = req.body;
     const { username } = req;
 
-    const cycleLog = { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, sexualActivities, pills, moods, medications, birthControls };
-    console.log(cycleLog);
+    const cycleLog = { sleepHours, username, creationDate, note, menstrualFlowId, vaginalFlowId, symptoms, pills, moods, medications, birthControls };
     try {
         const result = await createCycleLog(cycleLog);
 
@@ -50,10 +49,10 @@ const registerCycleLog = async (req, res) => {
 
 const updateCycleLogEntry = async (req, res) => {
     const { cycleLogId } = req.params;
-    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, birthControls } = req.body;
+    const { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, pills, medications, birthControls } = req.body;
     const { username } = req;
 
-    const updatedCycleLog = { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, medications, birthControls, username };
+    const updatedCycleLog = { sleepHours, note, menstrualFlowId, vaginalFlowId, symptoms, moods, pills, medications, birthControls, username };
     try {
         const result = await updateCycleLog(cycleLogId, updatedCycleLog);
 
@@ -83,9 +82,15 @@ const getCycleLogByDay = async (req, res) => {
     const { username } = req;
 
     try {
-        const cycleLog = await getCycleLogByDate(username, month, year, day);
+        const log = await getCycleLogByDate(username, month, year, day);
 
-        if (cycleLog) {
+        if (log) {
+            const symptoms = await getSymptomsByCycleLogId(log.cycleLogId);
+            const moods = await getMoodsByCycleLogId(log.cycleLogId);
+            const medications = await getMedicationsByCycleLogId(log.cycleLogId);
+            const pills = await getPillsByCycleLogId(log.cycleLogId);
+            const birthControl = await getBirthControlByCycleLogId(log.cycleLogId);
+            const cycleLog = {...log, symptoms, moods, medications, pills, birthControl};
             res.status(HttpStatusCodes.OK).json(cycleLog);
         } else {
             res.status(HttpStatusCodes.NOT_FOUND).json({
