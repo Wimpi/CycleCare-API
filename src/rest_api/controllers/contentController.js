@@ -161,7 +161,7 @@ const getInformativeContent = async(req, res) => {
                 details: "Not informative content found"
             });
         }
-        res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
+        res.status(HttpStatusCodes.OK).json(informativeContent);
     } catch (error){
         console.error(error);
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -205,7 +205,7 @@ const getArticleByMedic = async(req, res) => {
                     details: "No articles found for this user"
             });
         }
-        res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
+        res.status(HttpStatusCodes.OK).json(informativeContent);
 
     } catch (error){
         console.error(error);
