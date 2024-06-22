@@ -155,8 +155,8 @@ const updateCycleData = async (cycleLogId, updatedCycleLog) => {
     const updateParams = [];
     
     if (sleepHours !== undefined) {
-        if (sleepHours === null || sleepHours == 0) {
-            updateQueries.push('sleepHours = NULL');
+        if (sleepHours === null ) {
+            updateQueries.push('sleepHours = 0');
         } else {
             updateQueries.push('sleepHours = ?');
             updateParams.push(sleepHours);
