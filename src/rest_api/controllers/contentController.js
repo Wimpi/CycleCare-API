@@ -8,7 +8,9 @@ const {
     getContentById, 
     updateArticle, 
     getAvarage, 
-    registerVideo} = require('../database/dao/contentDAO');
+    registerVideo, 
+    editRateContent, 
+    getRate} = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
 const path = require('path');
@@ -126,7 +128,7 @@ const contentRate = async (req, res) => {
     }
 
     try{
-        const result = await rateContent(contentId, {rating, username});
+        const result = await rateContent(contentId, rating, username);
 
         if(result.success) {
             res.status(HttpStatusCodes.OK)
@@ -151,6 +153,79 @@ const contentRate = async (req, res) => {
     }
 };
 
+const editContentRate = async (req, res) => {
+    const {contentId} = req.params;
+    const {rating} = req.body;
+    const {username} = req;
+
+    if(!contentId || !rating || !username){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+    }
+
+    try{
+        const result = await editRateContent(contentId, rating, username);
+
+        if(result.success) {
+            res.status(HttpStatusCodes.OK)
+                    .json({
+                        message: 'The content was rating succesfully'
+                    });
+        } else {
+            res.staus(HttpStatusCodes.NOT_FOUND).json({
+                error: true, 
+                statusCode: HttpStatusCodes.NOT_FOUND,
+                details: result.message
+            });
+            return
+        }
+    } catch(error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error:true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error trying to rating content. Try again later"
+        });
+    }
+};
+
+const getContentRate = async (req, res) => {
+    const {contentId} = req.params;
+    const {username} = req;
+
+    if(!contentId || !username){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+    }
+
+    try{
+        const result = await getRate(contentId, username);
+        if(!result || result.length === 0){
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
+                error: true, 
+                statusCode: HttpStatusCodes.NOT_FOUND, 
+                details: "Not informative content found"
+            });
+        }
+        console.log(result[0]);
+        res.status(HttpStatusCodes.OK).json(result[0]);
+        
+    } catch(error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error:true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error trying to rating content. Try again later"
+        });
+    }
+};
+
 const getInformativeContent = async(req, res) => {
     try {
         const informativeContent = await getContent();
@@ -161,7 +236,7 @@ const getInformativeContent = async(req, res) => {
                 details: "Not informative content found"
             });
         }
-        res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
+        res.status(HttpStatusCodes.OK).json(informativeContent);
     } catch (error){
         console.error(error);
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -205,7 +280,7 @@ const getArticleByMedic = async(req, res) => {
                     details: "No articles found for this user"
             });
         }
-        res.status(HttpStatusCodes.OK).json({InformativeContent: informativeContent});
+        res.status(HttpStatusCodes.OK).json(informativeContent);
 
     } catch (error){
         console.error(error);
@@ -299,6 +374,7 @@ const getAverageByContentId = async(req, res) => {
                 details: "No articles found with that id"
             });
         }else{
+            console.log(result);
             res.status(HttpStatusCodes.OK).json(result);
         }
     }catch (error){
@@ -322,4 +398,4 @@ function deleteImage(imageName){
     });
 }
 
-module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId, publishVideo};
+module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId, publishVideo, editContentRate, getContentRate};

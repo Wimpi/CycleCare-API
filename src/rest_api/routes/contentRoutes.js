@@ -9,7 +9,9 @@ const {
     getArticleById,
     updateInformativeContent,
     getAverageByContentId, 
-    publishVideo
+    publishVideo, 
+    editContentRate, 
+    getContentRate
 } = require('../controllers/contentController');
 
 const router = Router();
@@ -228,7 +230,37 @@ router.post('/update-informative-content', [validateJWT], updateInformativeConte
  */
 router.get('/get-average-by-content/:contentId', [validateJWT], getAverageByContentId);
 
-
+/**
+ * @swagger
+ * /publish-video:
+ *   post:
+ *     summary: Publish a new video
+ *     tags: [Videos]
+ *     parameters:
+ *       - name: token
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT Token for authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/NewVideo'
+ *     responses:
+ *       201:
+ *         description: Video created successfully
+ *       400:
+ *         description: Invalid data or error creating video
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/publish-video', [validateJWT], publishVideo);
+
+router.post('/update-rate/:contentId', [validateJWT], editContentRate);
+
+router.get('/get-rate/:contentId', [validateJWT], getContentRate);
 
 module.exports = router;

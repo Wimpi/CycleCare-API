@@ -155,8 +155,8 @@ const updateCycleData = async (cycleLogId, updatedCycleLog) => {
     const updateParams = [];
     
     if (sleepHours !== undefined) {
-        if (sleepHours === null) {
-            updateQueries.push('sleepHours = NULL');
+        if (sleepHours === null ) {
+            updateQueries.push('sleepHours = 0');
         } else {
             updateQueries.push('sleepHours = ?');
             updateParams.push(sleepHours);
@@ -366,46 +366,10 @@ const getCycleLogByDate = async (username, month, year, day) => {
         }
 
         const cycleLog = cycleLogRows[0];
-        const cycleLogId = cycleLog.cycleLogId;
-
-        const [symptomsRows] = await (await connection).execute(
-            'SELECT symptomId FROM symptomLog WHERE cycleLogId = ?',
-            [cycleLogId]
-        );
-        const symptoms = symptomsRows.map(row => ({ symptomId: row.symptomId }));
-
-        const [moodsRows] = await (await connection).execute(
-            'SELECT moodId FROM moodLog WHERE cycleLogId = ?',
-            [cycleLogId]
-        );
-        const moods = moodsRows.map(row => ({ moodId: row.moodId }));
-
-        const [medicationsRows] = await (await connection).execute(
-            'SELECT medicationId FROM medicationLog WHERE cycleLogId = ?',
-            [cycleLogId]
-        );
-        const medications = medicationsRows.map(row => ({ medicationId: row.medicationId }));
-
-        const [pillsRows] = await (await connection).execute(
-            'SELECT pillId FROM pillLog WHERE cycleLogId = ?',
-            [cycleLogId]
-        );
-        const pills = pillsRows.map(row => ({ pillId: row.pillId }));
-
-        const [birthControlsRows] = await (await connection).execute(
-            'SELECT birthControlId FROM birthControlLog WHERE cycleLogId = ?',
-            [cycleLogId]
-        );
-        const birthControls = birthControlsRows.map(row => ({ birthControlId: row.birthControlId }));
-
         return {
-            ...cycleLog,
-            symptoms,
-            moods,
-            medications,
-            pills,
-            birthControls
+            ...cycleLog
         };
+
     } catch (error) {
         console.error('Error al recuperar el ciclo:', error);
         throw error;
