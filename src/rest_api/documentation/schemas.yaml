@@ -233,4 +233,20 @@ schemas:
     SleepHours:
       type: integer
       description: Horas de sueño del seguimiento diario
+    NewVideo:
+      type: object
+        required:
+          - title
+          - creationDate
+        properties:
+          title:
+            type: string
+            description: The title of the video
+          creationDate:
+            type: string
+            format: date-time
+            description: The creation date of the video
+          description:
+            type: string
+            description: The description of the video
       

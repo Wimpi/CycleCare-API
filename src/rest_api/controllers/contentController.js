@@ -299,7 +299,7 @@ const getAverageByContentId = async(req, res) => {
                 details: "No articles found with that id"
             });
         }else{
-            res.status(HttpStatusCodes.OK).json(result);
+            res.status(HttpStatusCodes.OK).json({average:result});
         }
     }catch (error){
         console.error(error);
