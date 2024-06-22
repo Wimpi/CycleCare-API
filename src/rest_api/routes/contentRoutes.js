@@ -9,7 +9,8 @@ const {
     getArticleById,
     updateInformativeContent,
     getAverageByContentId, 
-    publishVideo
+    publishVideo, 
+    editContentRate
 } = require('../controllers/contentController');
 
 const router = Router();
@@ -256,5 +257,7 @@ router.get('/get-average-by-content/:contentId', [validateJWT], getAverageByCont
  *         description: Internal server error
  */
 router.post('/publish-video', [validateJWT], publishVideo);
+
+router.post('/update-rate/:contentId', [validateJWT], editContentRate);
 
 module.exports = router;

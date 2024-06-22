@@ -46,9 +46,7 @@ const updateArticle = async(article) => {
 }
 
 
-const rateContent = async (contentId, rateData) => {
-    const {rating, username} = rateData;
-
+const rateContent = async (contentId, rating, username) => {
     try{
         await(await connection).beginTransaction();
 
@@ -74,8 +72,26 @@ const rateContent = async (contentId, rateData) => {
         await (await connection).commit();
         return {success: true};
     }catch(error) {
-        await (await connection).rollback();
         console.error('Error trying to create rating: ', error);
+        await (await connection).rollback();
+        throw error;
+    }
+
+}
+
+const editRateContent = async (contentId, rating, username) => {
+    try{
+        const query = "UPDATE rate r JOIN contentRating cr ON r.rateId = cr.rateId SET r.value = ? WHERE r.username = ? AND cr.contentId = ?";
+
+        await (await connection).execute(
+            query, 
+            [rating, username, contentId]
+        );
+
+        return {success: true};
+    }catch(error) {
+        console.error('Error trying to create rating: ', error);
+        await (await connection).rollback();
         throw error;
     }
 
@@ -145,4 +161,5 @@ module.exports = {
     getContentById, 
     updateArticle, 
     getAvarage, 
-    registerVideo};
+    registerVideo, 
+    editRateContent};
