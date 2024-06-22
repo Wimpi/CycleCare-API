@@ -9,7 +9,8 @@ const {
     updateArticle, 
     getAvarage, 
     registerVideo, 
-    editRateContent} = require('../database/dao/contentDAO');
+    editRateContent, 
+    getRate} = require('../database/dao/contentDAO');
 
 const HttpStatusCodes = require('../utils/enums');
 const path = require('path');
@@ -191,6 +192,40 @@ const editContentRate = async (req, res) => {
     }
 };
 
+const getContentRate = async (req, res) => {
+    const {contentId} = req.params;
+    const {username} = req;
+
+    if(!contentId || !username){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            error: true,
+            statusCode: HttpStatusCodes.BAD_REQUEST,
+            details: "Invalid data. Please check your request and try again"
+        });
+    }
+
+    try{
+        const result = await getRate(contentId, username);
+        if(!result || result.length === 0){
+            return res.status(HttpStatusCodes.NOT_FOUND).json({
+                error: true, 
+                statusCode: HttpStatusCodes.NOT_FOUND, 
+                details: "Not informative content found"
+            });
+        }
+        console.log(result[0]);
+        res.status(HttpStatusCodes.OK).json(result[0]);
+        
+    } catch(error) {
+        console.error(error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            error:true,
+            statusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            details: "Error trying to rating content. Try again later"
+        });
+    }
+};
+
 const getInformativeContent = async(req, res) => {
     try {
         const informativeContent = await getContent();
@@ -339,7 +374,8 @@ const getAverageByContentId = async(req, res) => {
                 details: "No articles found with that id"
             });
         }else{
-            res.status(HttpStatusCodes.OK).json({average:result});
+            console.log(result);
+            res.status(HttpStatusCodes.OK).json(result);
         }
     }catch (error){
         console.error(error);
@@ -362,4 +398,4 @@ function deleteImage(imageName){
     });
 }
 
-module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId, publishVideo, editContentRate};
+module.exports = {contentRate, getInformativeContent, publishContent, getArticleByMedic, getArticleById, updateInformativeContent, getAverageByContentId, publishVideo, editContentRate, getContentRate};

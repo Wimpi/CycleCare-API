@@ -97,6 +97,26 @@ const editRateContent = async (contentId, rating, username) => {
 
 }
 
+const getRate = async (contentId, username) => {
+    try{
+        const query = "SELECT r.value FROM rate r JOIN contentRating cr ON r.rateId = cr.rateId WHERE r.username = ? AND cr.contentId = ?"
+
+        const[rows] = await (await connection).execute(
+            query, 
+            [username, contentId]
+        );
+        if(rows.length>0){
+            return rows;
+        }else{
+            console.log("No se encontró")
+        }
+    }catch(error){
+        console.error('Error trying to create rating: ', error);
+        await (await connection).rollback();
+        throw error;
+    }
+}
+
 const getContent = async() => {
     try{
         const query = "SELECT * FROM content WHERE isVideo = 0 ORDER BY contentId DESC LIMIT 10"; 
@@ -146,7 +166,10 @@ const getAvarage = async(contentId) => {
             query, 
             [contentId]
         );
-        return rows;
+
+        if(rows.length > 0){
+            return rows[0];
+        }
     } catch(error) {
         console.error('Error trying to get AVG: ', error);
         throw error;
@@ -162,4 +185,5 @@ module.exports = {
     updateArticle, 
     getAvarage, 
     registerVideo, 
-    editRateContent};
+    editRateContent, 
+    getRate};

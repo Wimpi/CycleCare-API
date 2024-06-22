@@ -10,7 +10,8 @@ const {
     updateInformativeContent,
     getAverageByContentId, 
     publishVideo, 
-    editContentRate
+    editContentRate, 
+    getContentRate
 } = require('../controllers/contentController');
 
 const router = Router();
@@ -259,5 +260,7 @@ router.get('/get-average-by-content/:contentId', [validateJWT], getAverageByCont
 router.post('/publish-video', [validateJWT], publishVideo);
 
 router.post('/update-rate/:contentId', [validateJWT], editContentRate);
+
+router.get('/get-rate/:contentId', [validateJWT], getContentRate);
 
 module.exports = router;
