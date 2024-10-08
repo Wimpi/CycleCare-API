@@ -6,20 +6,23 @@ services:
     restart: always
     ports:
       - 3308:3306
+    networks:
+        - docker-network
     volumes:
       - ./init-scripts:/docker-entrypoint-initdb.d
     environment:
       MYSQL_USER: sangron1356
       MYSQL_PASSWORD: CYCL3C4RE
-      MYSQL_DB: cycleCareDB
+      MYSQL_DATABASE: cycleCareDB
       MYSQL_ROOT_PASSWORD: CYCL3C4RE
-  cyclecare_grpc_video:
-    build: 
-      context: ./grpc_api
-    container_name: cyclecare_grpc_video_container
-    restart: always
-    ports:
-      - 3000:3000
+# I don't think we need this
+#  cyclecare_grpc_video:
+#    build:
+#      context: ./grpc_api
+#    container_name: cyclecare_grpc_video_container
+#    restart: always
+#    ports:
+#      - 3000:3000
   cyclecare_restapi:
     build: 
       context: ./rest_api
@@ -27,7 +30,20 @@ services:
     restart: always
     ports:
       - 8085:8085
+    networks:
+      - docker-network
+    environment:
+      DB_HOST: cyclecare_db
+      DB_USER: sangron1356
+      DB_PASSWORD: CYCL3C4RE
+      DB_NAME: cycleCareDB
+      APP_PORT: 8085
+      JWT_PRIVATE_KEY: myprivatekey
     depends_on:
       - cyclecare_db
 volumes:
   init-scripts:
+
+networks:
+  docker-network:
+    driver: bridge

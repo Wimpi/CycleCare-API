@@ -232,10 +232,10 @@ router.get('/get-average-by-content/:contentId', [validateJWT], getAverageByCont
 
 /**
  * @swagger
- * /publish-video:
+ * /content/publish-video:
  *   post:
  *     summary: Publish a new video
- *     tags: [Videos]
+ *     tags: [Content]
  *     parameters:
  *       - name: token
  *         in: header

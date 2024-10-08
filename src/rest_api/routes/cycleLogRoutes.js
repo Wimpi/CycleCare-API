@@ -20,7 +20,7 @@ const router = Router();
 
 /**
  * @swagger
- * /register-cycle-log:
+ * /logs/register-cycle-log:
  *   post:
  *     summary: Registrar un nuevo ciclo
  *     tags: [CycleLog]
@@ -47,7 +47,7 @@ router.post('/register-cycle-log', [validateJWT], registerCycleLog);
 
 /**
  * @swagger
- * /update-cycle-log/{cycleLogId}:
+ * /logs/update-cycle-log/{cycleLogId}:
  *   post:
  *     summary: Actualizar un ciclo existente
  *     tags: [CycleLog]
@@ -82,7 +82,7 @@ router.post('/update-cycle-log/:cycleLogId', [validateJWT], updateCycleLogEntry)
 
 /**
  * @swagger
- * /user-cycle-logs/{year}/{month}:
+ * /logs/user-cycle-logs/{year}/{month}:
  *   get:
  *     summary: Obtener ciclos por mes y usuario
  *     tags: [CycleLog]
@@ -123,7 +123,7 @@ router.get('/user-cycle-logs/:year/:month', [validateJWT], getCycleLogs);
 
 /**
  * @swagger
- * /cycle-log/{logId}:
+ * /logs/cycle-log/{logId}:
  *   delete:
  *     summary: Eliminar un ciclo
  *     tags: [CycleLog]
@@ -152,7 +152,7 @@ router.delete('/cycle-log/:logId', [validateJWT], removeCycleLog);
 
 /**
  * @swagger
- * /user-cycle-logs/{year}/{month}/{day}:
+ * /logs/user-cycle-logs/{year}/{month}/{day}:
  *   get:
  *     summary: Obtener ciclo por día y usuario
  *     tags: [CycleLog]
@@ -197,7 +197,7 @@ router.get('/user-cycle-logs/:year/:month/:day', [validateJWT], getCycleLogByDay
 
 /**
  * @swagger
- * /prediction-cycle:
+ * /logs/prediction-cycle:
  *   get:
  *     summary: Obtener predicción del ciclo
  *     tags: [CycleLog]
