@@ -1,7 +1,7 @@
 const connection = require("../connection");
 
 const login = async (username, password) => {
-    const query = "SELECT u.email, u.role, p.name, p.firstLastname, p.secondLastName " +
+    const query = "SELECT u.email, u.role, p.name, p.firstLastName, p.secondLastName " +
     "FROM user u JOIN person p ON u.email = p.email WHERE u.username = ? AND u.password = ?"
     let loginResult = null;
 
@@ -14,7 +14,7 @@ const login = async (username, password) => {
                 email: user.email,
                 role: user.role,
                 name: user.name,
-                firstLastname: user.firstLastname,
+                firstLastName: user.firstLastName,
                 secondLastName: user.secondLastName
             };
         }
@@ -31,7 +31,7 @@ const postUser = async (user) => {
         await (await connection).beginTransaction();
 
         await (await connection).execute(
-            "INSERT INTO person (email, name, firstLastname, secondLastName) VALUES (?, ?, ?, ?)",
+            "INSERT INTO person (email, name, firstLastName, secondLastName) VALUES (?, ?, ?, ?)",
             [user.email, user.name, user.firstLastName, user.secondLastName]
         );
 
@@ -103,7 +103,7 @@ const updateUserPassword = async (email, newPassword) => {
 };
 
 const findUserByUsername = async (username) => {
-    const query = "SELECT u.email, u.role, p.name, p.firstLastname, p.secondLastName " +
+    const query = "SELECT u.email, u.role, p.name, p.firstLastName, p.secondLastName " +
     "FROM user u JOIN person p ON u.email = p.email WHERE u.username = ?";
     
     try {

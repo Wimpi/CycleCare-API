@@ -5,7 +5,7 @@ const createReminder = async (reminder) => {
 
     try{
         const [result] = await(await connection).execute(
-            'INSERT INTO reminder (description, title, creationDate, username) VALUES (?,?,?,?)',
+            "INSERT INTO reminder (description, title, creationDate, username) VALUES (?,?,STR_TO_DATE(?, '%Y-%m-%dT%H:%i:%sZ'),?)",
             [description, title, creationDate, username]
         );
 
@@ -30,7 +30,7 @@ const updateReminder = async (reminderId, newReminderData) => {
     const {description, title, creationDate, username} = newReminderData;
     
     try{
-        const query = "UPDATE reminder SET description = ?, title = ?, creationDate = ? WHERE reminderId = ? AND username = ?";
+        const query = "UPDATE reminder SET description = ?, title = ?, creationDate = STR_TO_DATE(?, '%Y-%m-%dT%H:%i:%sZ') WHERE reminderId = ? AND username = ?";
         
         const [result] = await (await connection).execute(query, [description, title, creationDate, reminderId, username]);
         if(result.affectedRows > 0){
@@ -50,7 +50,7 @@ const updateReminder = async (reminderId, newReminderData) => {
 const getReminderById = async (reminderId) => {
     try {
         const [rows] = await (await connection).execute(
-            "SELECT * FROM reminder WHERE reminderId = ?",
+            "SELECT reminderId, description, title, DATE_FORMAT(creationDate, '%Y-%m-%dT%H:%i:%sZ') creationDate, scheduleId, username FROM reminder WHERE reminderId = ?",
             [reminderId]
         );
 

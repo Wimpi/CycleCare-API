@@ -55,7 +55,7 @@ router.post('/login', userLogin);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#components/schemas/NewUser'
+ *             $ref: '#/components/schemas/NewUser'
  *     responses:
  *       201:
  *         description: Usuario registrado correctamente

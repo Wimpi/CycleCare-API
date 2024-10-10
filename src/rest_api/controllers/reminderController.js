@@ -69,13 +69,13 @@ const validateReminderInput = (data) => {
     const { description, title, creationDate } = data;
 
     if (!description || !description.match(descriptionPattern)) {
-        return { valid: false, message: "Invalid description. Please provide a valid description (1-200 characters, only Spanish alphabet characters and spaces)." };
+        return { valid: false, message: "Invalid description '" + description + "'. Please provide a valid description (1-200 characters, only Spanish alphabet characters and spaces)." };
     }
     if (!title || !title.match(titlePattern)) {
-        return { valid: false, message: "Invalid title. Please provide a valid title (1-70 characters, only Spanish alphabet characters and spaces)." };
+        return { valid: false, message: "Invalid title '" + title + "'. Please provide a valid title (1-70 characters, only Spanish alphabet characters and spaces)." };
     }
     if (!creationDate || isNaN(Date.parse(creationDate))) {
-        return { valid: false, message: "Invalid creation date. Please provide a valid date." };
+        return { valid: false, message: "Invalid creation date '" + creationDate + "'. Please provide a valid date." };
     }
 
     return { valid: true };
@@ -143,17 +143,17 @@ const validateUpdateReminderInput = (data, reminderId) => {
     if (isNaN(reminderId)) {
         return { valid: false, message: "Invalid reminder ID. Please provide a valid number." };
     }
-    if (scheduleId !== undefined && !scheduleId) {
+    if (scheduleId != null) {
         return { valid: false, message: "Invalid schedule ID." };
     }
     if (description !== undefined && !description.match(descriptionPattern)) {
-        return { valid: false, message: "Invalid description. Please provide a valid description (1-200 characters, only Spanish alphabet characters and spaces)." };
+        return { valid: false, message: "Invalid description '" + description + "'. Please provide a valid description (1-200 characters, only Spanish alphabet characters and spaces)." };
     }
     if (title !== undefined && !title.match(titlePattern)) {
-        return { valid: false, message: "Invalid title. Please provide a valid title (1-70 characters, only Spanish alphabet characters and spaces)." };
+        return { valid: false, message: "Invalid title '" + title + "'. Please provide a valid title (1-70 characters, only Spanish alphabet characters and spaces)." };
     }
     if (creationDate !== undefined && isNaN(Date.parse(creationDate))) {
-        return { valid: false, message: "Invalid creation date. Please provide a valid date." };
+        return { valid: false, message: "Invalid creation date '" + creationDate + "'. Please provide a valid date." };
     }
 
     return { valid: true };

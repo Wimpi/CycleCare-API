@@ -14,7 +14,7 @@ const scheduleReminderEmail = (email, subject, htmlContent, date) => {
         sendEmail(email, subject, htmlContent);
     }, {
         scheduled: true,
-        timezone: "America/Mexico_City"
+        timezone: "UTC"
     });
 
     scheduledTasks[scheduleId] = { job, email, subject, htmlContent };

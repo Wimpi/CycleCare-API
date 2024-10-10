@@ -3,7 +3,7 @@ const connection = require("../connection");
 
 const registerArticle = async(article) =>{
     try {
-        const query = "INSERT INTO content (title, description, creationDate, media, username, isVideo) VALUES (?, ?, ?, ?, ?, ?)";
+        const query = "INSERT INTO content (title, description, creationDate, media, username, isVideo) VALUES (?, ?, STR_TO_DATE(?, '%Y-%m-%dT%H:%i:%sZ'), ?, ?, ?)";
         await(await connection).execute(
             query, 
             [article.title, article.description, article.creationDate, article.filename, article.username, 0]
@@ -18,7 +18,7 @@ const registerArticle = async(article) =>{
 
 const registerVideo = async(video) =>{
     try {
-        const query = "INSERT INTO content (title, creationDate, media, username, isVideo) VALUES (?, ?, ?, ?, ?)";
+        const query = "INSERT INTO content (title, creationDate, media, username, isVideo) VALUES (?, STR_TO_DATE(?, '%Y-%m-%dT%H:%i:%sZ'), ?, ?, ?)";
         await(await connection).execute(
             query, 
             [video.title, video.creationDate, video.filename, video.username, 1]
@@ -119,7 +119,7 @@ const getRate = async (contentId, username) => {
 
 const getContent = async() => {
     try{
-        const query = "SELECT * FROM content WHERE isVideo = 0 ORDER BY contentId DESC LIMIT 10"; 
+        const query = "SELECT contentId, title, description, DATE_FORMAT(creationDate, '%Y-%m-%dT%H:%i:%sZ'),  media, username, isVideo FROM content WHERE isVideo = 0 ORDER BY contentId DESC LIMIT 10";
         const [rows] = await (await connection).execute(query);
     
         return rows;
@@ -131,7 +131,7 @@ const getContent = async() => {
 
 const getArticlesByUsername = async(username) => {
     try{
-        const query = 'SELECT * FROM content WHERE username = ? AND isVideo = 0'
+        const query = 'SELECT contentId, title, description, DATE_FORMAT(creationDate, \'%Y-%m-%dT%H:%i:%sZ\'),  media, username, isVideo FROM content WHERE username = ? AND isVideo = 0'
 
         const [rows] = await(await connection).execute(
             query, 
@@ -147,7 +147,7 @@ const getArticlesByUsername = async(username) => {
 
 const getContentById = async(contentId) => {
     try{
-        const query = 'SELECT * FROM content WHERE contentId =  ?'
+        const query = 'SELECT contentId, title, description, DATE_FORMAT(creationDate, \'%Y-%m-%dT%H:%i:%sZ\'),  media, username, isVideo FROM content WHERE contentId =  ?'
         const [rows] = await(await connection).execute(
             query, 
             [contentId]

@@ -4,10 +4,13 @@ CREATE DATABASE IF NOT EXISTS cycleCareDB;
 -- Seleccionar la base de datos
 USE cycleCareDB;
 
+-- Global timezone on UTC
+set global time_zone = 'UTC';
+
 CREATE TABLE person (
     email VARCHAR(100) PRIMARY KEY,
     name NVARCHAR(70),
-    firstLastname NVARCHAR(70),
+    firstLastName NVARCHAR(70),
     secondLastName NVARCHAR(70)
 );
 

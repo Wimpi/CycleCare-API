@@ -202,7 +202,7 @@ const deleteCycleLog = async (cycleLogId, username) => {
         await (await connection).beginTransaction();
 
         const [rows] = await (await connection).execute(
-            'SELECT * FROM cycleLog WHERE cycleLogId = ? AND username = ?',
+            'SELECT cycleLogId FROM cycleLog WHERE cycleLogId = ? AND username = ?',
             [cycleLogId, username]
         );
 
