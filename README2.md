@@ -49,3 +49,10 @@ There are no tests yet.
 A proposal is to make a small spring boot app with a generated openapi client to the exposed api documentation.
 We could also access the DB from the spring boot app and verify its contents.
 From there we can run IT tests on the rest_api and underlying DB.
+
+
+### ideas:
+* jwt from HS256 (secret key) to ECDSA (public/private key pair)
+* https://jwt.io/#debugger-io?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphbmUuZG9lIiwiaWF0IjoxNzI4NTY0ODMxLCJleHAiOjE3Mjg1Njg0MzF9.sjgR8HR1Ry6KkgPtY5A5k9ZAPpn2GR8cOlGaS0kTvSI with `myprivatekey` for HS256
+* RBAC https://medium.com/@erinlim555/simple-keycloak-rbac-with-node-js-express-js-bc9031c9f1ba
+* keycloak https://stackoverflow.com/questions/49572291/keycloak-user-validation-and-getting-token
