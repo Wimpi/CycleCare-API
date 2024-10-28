@@ -2,3 +2,5 @@
 /src/rest_api/.env
 /src/rest_api/.scannerwork
 /src/rest_api/sonar-project.properties
+/MAI-tests/cyclecare-client/src/test/resources/application-test.yaml
+/src/.env

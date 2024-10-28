@@ -15,8 +15,26 @@ modified [docker-compose.yml](src/docker-compose.yml) to:
    3. `DB_PASSWORD` -> see connection.js
    4. `DB_NAME` -> see connection.js
    5. `APP_PORT` -> see swagger.js, server.js
+   6. `EMAIL` -> see sendEmail.js, filled in using the .env file
+   7. `EMAIL_PASSWORD` -> see sendEmail.js, filled in using the .env file
 1. commented out the `cyclecare_grpc_video` serevice. I don't think we need this at the moment.
 1. use the same network (bridge) for all services; this may not be necessary as I guess docker will do this by default.
+
+added `.env` file to the project:
+1. create a `.env` file under src (besides the docker-compose.yml) with the following content:
+```bash
+# replace with your gmail account and app password
+# you can create an app password here: https://myaccount.google.com/
+# important note: this will only work if you have 2FA enabled !!!
+EMAIL=myaccount@gmail.com
+EMAIL_PASSWORD=myAppPassword
+```
+
+<span style="color:red">
+<b>IMPORTANT NOTE:</b> Do NOT commit this file to the repository, or you may leak your email and app password!!!
+</span>
+
+
 
 moddified [cycleLogRoutes.js](src/rest_api/routes/cycleLogRoutes.js) to:
 1. include the `/log` part of the route in the swagger documentation (otherwise it won't work from the api-doc endpoint)
@@ -33,7 +51,17 @@ TODO: english translation of [init.sql](src/init-scripts/init.sql) ?
 ## Running the app
 When you have docker installed, you can run the app by running the following command in the root of the project:
 ```bash
-docker-compose up
+docker-compose up --build
+```
+or
+```bash
+podman-compose up --build
+```
+if you are using podman instead of docker.
+
+If you have problems mounting the volumes, you can try to run the following command to disable SELinux:
+```bash
+sudo setenforce 0
 ```
 
 You should be able to connect to the DB with using the environment variables in the [docker-compose.yml](src/docker-compose.yml) file.
@@ -45,10 +73,26 @@ api-docs endpoint:
 http://localhost:8085/api-docs
 
 ## Running the tests
-There are no tests yet.
-A proposal is to make a small spring boot app with a generated openapi client to the exposed api documentation.
-We could also access the DB from the spring boot app and verify its contents.
-From there we can run IT tests on the rest_api and underlying DB.
+There is a UserIT.java test.
+It verifies the creation of a user, the login process, and the password reset process.
+It is written in Springboot3 and can access the following components:
+* the backend API by means of an api client generated from the (modified) openapi spec
+* the DB itself by means of `spring-boot-starter-data-jpa`
+* and also gmail for retrieving a password reset token by means of a utility `GmailReadService`
+
+Create a file `application-test.yaml` in the test resource folder [cyclecare-client/src/test/resources/application-test.yaml](cyclecare-client/src/test/resources/application-test.yaml) with the following content:
+```yaml
+gmail:
+  # replace with your gmail account and app password
+  # you can create an app password here: https://myaccount.google.com/
+  # important note: this will only work if you have 2FA enabled !!!
+  email: myaccount@gmail.com
+  appPassword: myAppPassword
+```
+
+<span style="color:red">
+<b>IMPORTANT NOTE:</b> Do NOT commit this file to the repository, or you may leak your email and app password!!!
+</span>
 
 
 ### ideas:

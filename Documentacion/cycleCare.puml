@@ -1,0 +1,30 @@
+@startuml "C4 Diagram CycleCare"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_TOP_DOWN()
+'LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+AddElementTag("Imaginary", $fontColor="orange")
+
+System_Boundary(external, "External") {
+    Person_Ext(person, "Customer", "A customer of CycleCare", "Customer")
+    Container(app, "CycleCare App", "The CycleCare App", "Android")
+    Rel(person, app, "Uses", "Uses")
+}
+
+System_Boundary(internal, "Internal") {
+    Person(medic, "Medic", "A medic of CycleCare", "Medic")
+    Container(web, "Web App", "The Internal CycleCare Web App", $tags="Imaginary")
+    Rel(medic, web, "Uses", "https")
+    Container(api, "API", "The CycleCare API", "Node.js")
+    Rel(web, api, "Calls", "http")
+    Container(db, "Database", "The CycleCare Database", "Mysql")
+    Rel(api, db, "Reads/Writes", "mysql driver")
+    Person(admin, "Admin", "An admin of CycleCare", "Admin")
+    Rel_L(admin, db, "Reads/Writes", "sql")
+}
+
+Rel(app, api, "Calls", "http")
+
+@enduml

@@ -51,7 +51,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <inputSpec>${project.basedir}/src/main/resources/cyclecare-openapi.json</inputSpec>
+                    <inputSpec>${project.basedir}/src/main/resources/cyclecare-openapi.yaml</inputSpec>
                     <generatorName>java</generatorName>
                     <generateApiTests>false</generateApiTests>
                     <generateModelTests>false</generateModelTests>
