@@ -4,7 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -12,7 +14,7 @@ import java.util.UUID;
 @Entity(name="reminder")
 public class Reminder {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reminderId;
 
     private String description;
@@ -21,6 +23,7 @@ public class Reminder {
 
     private OffsetDateTime creationDate;
 
+    @JdbcTypeCode(Types.VARCHAR)
     private UUID scheduleId;
 
     private String username;

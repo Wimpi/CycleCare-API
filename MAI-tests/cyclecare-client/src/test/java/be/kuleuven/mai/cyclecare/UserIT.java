@@ -1,8 +1,6 @@
 package be.kuleuven.mai.cyclecare;
 
 import be.kuleuven.mai.cyclecare.api.UsersApi;
-import be.kuleuven.mai.cyclecare.domain.MenstrualCycle;
-import be.kuleuven.mai.cyclecare.domain.Person;
 import be.kuleuven.mai.cyclecare.domain.User;
 import be.kuleuven.mai.cyclecare.model.NewUserDTO;
 import be.kuleuven.mai.cyclecare.model.UsersLoginPost200ResponseDTO;
@@ -39,6 +37,9 @@ class UserIT {
     UsersApi usersApi;
 
     @Autowired
+    UsersTestResource usersTestResource;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -69,25 +70,11 @@ class UserIT {
 
     @Test
     void createUserTest() {
-        createUser();
+        final NewUserDTO newUserDTO = usersTestResource.newUserDto(userEmail, userId);
+        usersApi.usersRegisterUserPost(newUserDTO);
 
-        Optional<User> userById = userRepository.findById(userId);
-        final User expectedUser = new User();
-        expectedUser.setUsername(userId);
-        expectedUser.setRole(User.Role.USER);
-        expectedUser.setPassword("password");
-        Person person = new Person();
-        person.setEmail(userEmail);
-        person.setName("Jane");
-        person.setFirstLastName("Doe");
-        person.setSecondLastname("Two");
-        expectedUser.setPerson(person);
-        MenstrualCycle menstrualCycle = new MenstrualCycle();
-        menstrualCycle.setUsername(userId);
-        menstrualCycle.setRegular(true);
-        menstrualCycle.setAproxCycleDuration(28);
-        menstrualCycle.setAproxPeriodDuration(5);
-        expectedUser.setMenstrualCycle(menstrualCycle);
+        final User expectedUser = usersTestResource.user(userEmail, userId);
+        final Optional<User> userById = userRepository.findById(userId);
         assertThat(userById)
             .isPresent()
             .contains(expectedUser)
@@ -98,18 +85,18 @@ class UserIT {
 
     @Test
     void loginTest() {
-        createUser();
+        usersTestResource.createUser(userEmail, userId);
         UsersLoginPostRequestDTO usersLoginPostRequestDTO = new UsersLoginPostRequestDTO()
             .username(userId)
-            .password("password")
+            .password(UsersTestResource.PASSWORD)
             ;
         final UsersLoginPost200ResponseDTO token = usersApi.usersLoginPost(usersLoginPostRequestDTO);
         assertThat(token)
             .hasFieldOrPropertyWithValue("email", userEmail)
-            .hasFieldOrPropertyWithValue("role", "USER")
-            .hasFieldOrPropertyWithValue("name", "Jane")
-            .hasFieldOrPropertyWithValue("firstLastName", "Doe")
-            .hasFieldOrPropertyWithValue("secondLastName", "Two")
+            .hasFieldOrPropertyWithValue("role", UsersTestResource.ROLE)
+            .hasFieldOrPropertyWithValue("name", UsersTestResource.NAME)
+            .hasFieldOrPropertyWithValue("firstLastName", UsersTestResource.FIRST_LAST_NAME)
+            .hasFieldOrPropertyWithValue("secondLastName", UsersTestResource.SECOND_LASTNAME)
             .extracting(UsersLoginPost200ResponseDTO::getToken)
             .isNotNull()
             .extracting(this::getUsernameClaim)
@@ -120,7 +107,7 @@ class UserIT {
 
     @Test
     void resetTest() {
-        createUser();
+        usersTestResource.createUser(userEmail, userId);
         Optional<User> userById = userRepository.findById(userId);
         assertThat(userById)
             .isPresent()
@@ -174,20 +161,4 @@ class UserIT {
         return decodedJWT.getClaim("username");
     }
 
-    private void createUser() {
-        final NewUserDTO newUserDTO = new NewUserDTO()
-            .name("Jane")
-            .firstLastName("Doe")
-            .secondLastName("Two")
-            .email(userEmail)
-            .aproxCycleDuration(28)
-            .aproxPeriodDuration(5)
-            .isRegular(true)
-            .password("password")
-            .username(userId)
-            .role(NewUserDTO.RoleEnum.USER) // USER or MEDIC
-            ;
-
-        usersApi.usersRegisterUserPost(newUserDTO);
-    }
 }
