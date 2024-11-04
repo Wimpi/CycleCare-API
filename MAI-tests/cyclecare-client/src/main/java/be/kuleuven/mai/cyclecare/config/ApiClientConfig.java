@@ -9,14 +9,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.IntStream;
 
 @Configuration
 public class ApiClientConfig {
@@ -33,18 +30,26 @@ public class ApiClientConfig {
         offsetDateTimeModule.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeserializer());
         objectMapper.registerModule(offsetDateTimeModule);
 
-        // Create a custom RestTemplate with the custom ObjectMapper
-        final RestTemplate restTemplate = new RestTemplate();
-        List<HttpMessageConverter<?>> messageConverters = Collections.singletonList(new MappingJackson2HttpMessageConverter(objectMapper));
-        restTemplate.setMessageConverters(messageConverters);
-        // Create a custom RestClient with the custom RestTemplate
-        // it seems that there is no other way when you want to create a RestClient with custom HttpMessageConverters...
-        final RestClient restClient = RestClient.builder(restTemplate)
+        // Create a custom RestClient with a custom MappingJackson2HttpMessageConverter
+        final RestClient restClient = RestClient.builder()
+            .messageConverters(messageConverters ->
+                // find the location of the current MappingJackson2HttpMessageConverter
+                IntStream.range(0, messageConverters.size())
+                    .filter(index -> messageConverters.get(index) instanceof MappingJackson2HttpMessageConverter)
+                    .findFirst()
+                    .ifPresentOrElse(
+                        // replace with custom MappingJackson2HttpMessageConverter
+                        index -> messageConverters.set(index, new MappingJackson2HttpMessageConverter(objectMapper)),
+                        // add custom MappingJackson2HttpMessageConverter
+                        () -> messageConverters.add(new MappingJackson2HttpMessageConverter(objectMapper))
+                    )
+            )
             .build();
 
         // Create a custom ApiClient with the custom RestClient
         return new ApiClient(restClient)
-            .setBasePath(basePath);
+            .setBasePath(basePath)
+            ;
     }
 
     @Bean

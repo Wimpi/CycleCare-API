@@ -73,10 +73,6 @@ components:
           type: string
           format: date-time
           description: Fecha de creación del recordatorio
-          x-field-extra-annotation: >-
-            @com.fasterxml.jackson.annotation.JsonFormat(shape =
-            com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern =
-            "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone="UTC")
         scheduleId:
           type: string
           description: ID del email programado del recordatorio
@@ -103,10 +99,6 @@ components:
           type: string
           format: date-time
           description: Fecha de creación del contenido informativo
-          x-field-extra-annotation: >-
-            @com.fasterxml.jackson.annotation.JsonFormat(shape =
-            com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern =
-            "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone="UTC")
         filename:
           type: string
           description: Nombre del archivo de imagen asociado con el contenido informativo
@@ -137,10 +129,6 @@ components:
           type: string
           format: date-time
           description: Fecha de creación del artículo
-          x-field-extra-annotation: >-
-            @com.fasterxml.jackson.annotation.JsonFormat(shape =
-            com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern =
-            "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone="UTC")
         media:
           type: string
           description: Nombre del archivo de imagen asociado con el artículo
@@ -168,10 +156,6 @@ components:
           type: string
           format: date-time
           description: Fecha de creación del nuevo artículo
-          x-field-extra-annotation: >-
-            @com.fasterxml.jackson.annotation.JsonFormat(shape =
-            com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern =
-            "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone="UTC")
         image:
           type: string
           description: Imagen en formato base64 del nuevo artículo
@@ -211,10 +195,6 @@ components:
           type: string
           format: date
           description: Fecha de creación del seguimiento diario
-          x-field-extra-annotation: >-
-            @com.fasterxml.jackson.annotation.JsonFormat(shape =
-            com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern =
-            "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone="UTC")
         note:
           type: string
           description: Nota del seguimiento diario
@@ -317,9 +297,6 @@ components:
           type: string
           format: date-time
           description: Fecha de creación del recordatorio
-          x-field-extra-annotation: "@com.fasterxml.jackson.annotation.JsonFormat(shape\
-            \ = com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern\
-            \ = \"yyyy-MM-dd'T'HH:mm:ss'Z'\", timezone=\"UTC\")"
         scheduleId:
           type: string
           description: The ID of the scheduled email of the reminder
