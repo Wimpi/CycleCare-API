@@ -5,6 +5,7 @@ import be.kuleuven.mai.cyclecare.domain.Reminder;
 import be.kuleuven.mai.cyclecare.domain.User;
 import be.kuleuven.mai.cyclecare.model.ReminderDTO;
 import be.kuleuven.mai.cyclecare.model.RemindersDTO;
+import be.kuleuven.mai.cyclecare.model.UpdateReminderDTO;
 import be.kuleuven.mai.cyclecare.repository.ReminderRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +63,7 @@ class ReminderIT {
             ;
         remindersApi.remindersCreateReminderPost(token, reminderDTO);
 
-        List<Reminder> allByUsername = reminderRepository.findAllByUsername(UsersTestResource.USER_ID);
+        final List<Reminder> allByUsername = reminderRepository.findAllByUsername(UsersTestResource.USER_ID);
         assertThat(allByUsername)
             .hasSize(1)
             .first()
@@ -90,6 +91,31 @@ class ReminderIT {
             .hasFieldOrPropertyWithValue("username", reminder.getUsername())
             .hasNoNullFieldsOrProperties()
         ;
+    }
+
+    @Test
+    void updateReminders() {
+        final Reminder reminder = remindersTestResource.createReminder();
+        final OffsetDateTime newCreationDate = OffsetDateTime.now();
+        final OffsetDateTime expectedCreationDate = newCreationDate
+            // in the DB, creationDate is at UTC
+            .withOffsetSameInstant(ZoneOffset.UTC)
+            // in the DB, creationDate is truncated to seconds
+            .truncatedTo(ChronoUnit.SECONDS);
+        final UpdateReminderDTO description = new UpdateReminderDTO()
+            .creationDate(newCreationDate)
+            .title("new title")
+            .description("new description");
+        remindersApi.remindersUpdateReminderReminderIdPost(reminder.getReminderId().toString(), token, description);
+        final List<Reminder> allByUsername = reminderRepository.findAllByUsername(UsersTestResource.USER_ID);
+        assertThat(allByUsername)
+            .hasSize(1)
+            .first()
+            .hasFieldOrPropertyWithValue("creationDate", expectedCreationDate)
+            .hasFieldOrPropertyWithValue("title", "new title")
+            .hasFieldOrPropertyWithValue("description", "new description")
+            .hasFieldOrPropertyWithValue("username", UsersTestResource.USER_ID)
+            .hasNoNullFieldsOrProperties();
     }
 
     @Test
