@@ -60,6 +60,13 @@ public class UsersTestResource {
     }
 
     /**
+     * @return Returns the token by logging in through the API.
+     */
+    public UsersLoginPost200ResponseDTO getUsersLoginPost200ResponseDTO() {
+        return getUsersLoginPost200ResponseDTO(USER_ID, PASSWORD);
+    }
+
+    /**
      * Returns the token by logging in through the API with a specific userId and password.
      *
      * @param userId
@@ -67,12 +74,23 @@ public class UsersTestResource {
      * @return
      */
     public String getToken(String userId, String password) {
+        final UsersLoginPost200ResponseDTO usersLoginResponse = getUsersLoginPost200ResponseDTO(userId, password);
+        return usersLoginResponse.getToken();
+    }
+
+    /**
+     * Returns the {@link UsersLoginPost200ResponseDTO} by logging in through the API with a specific userId and password.
+     *
+     * @param userId
+     * @param password
+     * @return
+     */
+    public UsersLoginPost200ResponseDTO getUsersLoginPost200ResponseDTO(String userId, String password) {
         UsersLoginPostRequestDTO usersLoginPostRequestDTO = new UsersLoginPostRequestDTO()
             .username(userId)
             .password(password)
             ;
-        final UsersLoginPost200ResponseDTO usersLoginResponse = usersApi.usersLoginPost(usersLoginPostRequestDTO);
-        return usersLoginResponse.getToken();
+        return usersApi.usersLoginPost(usersLoginPostRequestDTO);
     }
 
     /**

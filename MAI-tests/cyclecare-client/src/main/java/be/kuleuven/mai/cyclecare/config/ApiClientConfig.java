@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.stream.IntStream;
 
@@ -29,6 +30,10 @@ public class ApiClientConfig {
         offsetDateTimeModule.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
         offsetDateTimeModule.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeserializer());
         objectMapper.registerModule(offsetDateTimeModule);
+        final SimpleModule localDateModule = new SimpleModule();
+        localDateModule.addSerializer(LocalDate.class, new LocalDateSerializer());
+        localDateModule.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+        objectMapper.registerModule(localDateModule);
 
         // Create a custom RestClient with a custom MappingJackson2HttpMessageConverter
         final RestClient restClient = RestClient.builder()
