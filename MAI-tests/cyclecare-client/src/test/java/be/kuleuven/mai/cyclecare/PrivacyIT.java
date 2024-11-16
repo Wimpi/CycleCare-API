@@ -10,11 +10,15 @@ import be.kuleuven.mai.cyclecare.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -46,6 +50,65 @@ class PrivacyIT {
         userRepository.deleteById(UsersTestResource.USER_ID);
     }
 
+    @Test
+    void testUsernameLeak() {
+        // given
+        final User user = usersTestResource.createUser();
+        // when
+        // we create a user with the same username as already exists in the DB
+        // we use an email that is not supposed to exist in the database
+        final NewUserDTO newUserDTO = usersTestResource.newUserDto("xxx@yyy.zzz", UsersTestResource.USER_ID);
+        assertThat(newUserDTO.getUsername())
+            .isEqualTo(user.getUsername());
+
+        final ResponseEntity<String> responseEntity = usersApi.usersRegisterUserPostWithResponseSpec(newUserDTO)
+            // we want to read the response as-is, and don't want to throw an exception on 4xx or 5xx status codes
+            .onStatus(status -> true, (request, response) -> {})
+            .toEntity(String.class);
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(responseEntity)
+                .extracting(ResponseEntity::getStatusCode)
+                .extracting(HttpStatusCode::value, InstanceOfAssertFactories.INTEGER)
+                .isBetween(200, 299)
+                ;
+            softly.assertThat(responseEntity)
+                .extracting(ResponseEntity::getBody)
+                .asString()
+                .doesNotContain("Username already taken");
+        });
+    }
+
+
+    @Test
+    void testEmailLeak() {
+        // given
+        final User user = usersTestResource.createUser();
+        // when
+        // we create a user with the same email as already exists in the DB
+        // we use a userename that is not supposed to exist in the database
+        final NewUserDTO newUserDTO = usersTestResource.newUserDto(UsersTestResource.USER_EMAIL, "xxx.yyy.zzz");
+        assertThat(newUserDTO.getEmail())
+            .isEqualTo(user.getPerson().getEmail());
+
+        final ResponseEntity<String> responseEntity = usersApi.usersRegisterUserPostWithResponseSpec(newUserDTO)
+            // we want to read the response as-is, and don't want to throw an exception on 4xx or 5xx status codes
+            .onStatus(status -> true, (request, response) -> {})
+            .toEntity(String.class);
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(responseEntity)
+                .extracting(ResponseEntity::getStatusCode)
+                .extracting(HttpStatusCode::value, InstanceOfAssertFactories.INTEGER)
+                .isBetween(200, 299)
+            ;
+            softly.assertThat(responseEntity)
+                .extracting(ResponseEntity::getBody)
+                .asString()
+                .doesNotContain("Email already registered");
+        });
+    }
+
     /**
      * This is more a security test than a privacy test.
      * But it is important to check that the password is hashed in the database; otherwise, it is stored in plain text.
@@ -66,7 +129,8 @@ class PrivacyIT {
             .isPresent()
             .get()
             .extracting(User::getPassword)
-            .isNotEqualTo(password)
+            .asString()
+            .doesNotContain(password)
         ;
     }
 

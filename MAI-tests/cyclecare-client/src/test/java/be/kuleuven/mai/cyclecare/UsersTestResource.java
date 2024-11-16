@@ -42,9 +42,9 @@ public class UsersTestResource {
     /**
      * Creates a user directly in de DB, bypassing the API.
      *
-     * @param userEmail
-     * @param userId
-     * @return
+     * @param userEmail The email of the user.
+     * @param userId The userId of the user.
+     * @return The created user.
      */
     @Transactional
     public User createUser(String userEmail, String userId) {
@@ -69,9 +69,9 @@ public class UsersTestResource {
     /**
      * Returns the token by logging in through the API with a specific userId and password.
      *
-     * @param userId
-     * @param password
-     * @return
+     * @param userId The userId of the user.
+     * @param password The password of the user.
+     * @return The token.
      */
     public String getToken(String userId, String password) {
         final UsersLoginPost200ResponseDTO usersLoginResponse = getUsersLoginPost200ResponseDTO(userId, password);
@@ -81,9 +81,9 @@ public class UsersTestResource {
     /**
      * Returns the {@link UsersLoginPost200ResponseDTO} by logging in through the API with a specific userId and password.
      *
-     * @param userId
-     * @param password
-     * @return
+     * @param userId The userId of the user.
+     * @param password The password of the user.
+     * @return The {@link UsersLoginPost200ResponseDTO}.
      */
     public UsersLoginPost200ResponseDTO getUsersLoginPost200ResponseDTO(String userId, String password) {
         UsersLoginPostRequestDTO usersLoginPostRequestDTO = new UsersLoginPostRequestDTO()
@@ -96,9 +96,9 @@ public class UsersTestResource {
     /**
      * Create a new {@link User} entity for storing in the DB or comparing with results from the DB.
      *
-     * @param userEmail
-     * @param userId
-     * @return
+     * @param userEmail The email of the user.
+     * @param userId The userId of the user.
+     * @return The created user.
      */
     public User user(String userEmail, String userId) {
         final User user = new User();
@@ -123,9 +123,9 @@ public class UsersTestResource {
     /**
      * Creates a {@link NewUserDTO} to use for creating a user by means of the API.
      *
-     * @param userEmail
-     * @param userId
-     * @return
+     * @param userEmail The email of the user.
+     * @param userId The userId of the user.
+     * @return The created {@link NewUserDTO}.
      */
     public NewUserDTO newUserDto(String userEmail, String userId) {
         return new NewUserDTO()
