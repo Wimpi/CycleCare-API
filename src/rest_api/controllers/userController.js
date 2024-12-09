@@ -89,11 +89,16 @@ const registerNewUser = async (req, res = response) => {
     try {
         const existingEmail = await findUserByEmail(email);
         if (existingEmail) {
-            return res.status(HttpStatusCodes.BAD_REQUEST).json({
-                error: true,
-                statusCode: HttpStatusCodes.BAD_REQUEST,
-                details: "Email already registered. Please use a different email"
+            // TODO: Send email with password recovery link
+            return res.status(HttpStatusCodes.CREATED).json({
+                message: 'User registered successfully',
+                email: email
             });
+            // return res.status(HttpStatusCodes.BAD_REQUEST).json({
+            //     error: true,
+            //     statusCode: HttpStatusCodes.BAD_REQUEST,
+            //     details: "Email already registered. Please use a different email"
+            // });
         }
 
         const existingUsername = await findUserByUsername(username);
